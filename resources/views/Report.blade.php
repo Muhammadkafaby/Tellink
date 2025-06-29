@@ -28,16 +28,36 @@
 </head>
 <body>
     <x-layout>
+        <?php
+        $data = [];
+        for ($i = 1; $i <= 1000; $i++) {
+          $data[] = [
+            'id' => $i,
+            'col 1' => "lorem",
+            'col 2' => "lorem$i",
+            'col 3' => "lorem $i",
+            'col 4' => "lorem $i",
+            'col 5' => "lorem $i",
+          ];
+        }
+    
+        $perPage = $_GET['perPage'] ?? 8;
+        $currentPage = $_GET['page'] ?? 1;
+        $totalPages = ceil(count($data) / $perPage);
+        $offset = ($currentPage - 1) * $perPage;
+        $pagedData = array_slice($data, $offset, $perPage);
+      ?>
         <div class="bg-white p-6 rounded-lg shadow h-full flex flex-col justify-between">
             <div>
                 {{-- section 1  --}}
                 <div class="flex items-center justify-between px-9 py-2">
                     <!-- Tampilkan data -->
-                    <div class="flex items-center gap-2 ">
-                        <label for="pagination" class="">Tampilkan</label>
-                        <input id="pagination" type="number" name="Pagination" class="w-16 border border-gray-300 rounded px-2 py-1 " />
-                        <span class="">data</span>
-                    </div>
+                    <form method="GET" class="flex items-center gap-2">
+                        <label for="pagination">Tampilkan</label>
+                        <input id="pagination" type="number" max="8" name="perPage" value="<?= $perPage ?>" class="w-16 border border-gray-300 rounded px-2 py-1" />
+                        <span>data</span>
+                        <button type="submit" class="px-2 py-1 bg-red-500 hover:bg-red-400 text-white rounded">Terapkan</button>
+                      </form>
 
                     <!-- Search -->
                     <div class="flex items-center gap-2">
@@ -68,13 +88,14 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                @foreach ($pagedData as $row)
                                 <tr class="table-row even:bg-gray-50">
-                                    <td class="border-2 py-2 px-4 text-center">1</td>
-                                    <td class="border-2 py-2 px-4"><div class="10">Lorem ipsum, geming.</div></td>
-                                    <td class="border-2 py-2 px-4">08/05/04</td>
-                                    <td class="border-2 py-2 px-4">Lorem ipsum sir kolor </td>
-                                    <td class="border-2 py-2 px-4 text-center">sybau</td>
-                                    <td class="border-2 py-2 px-4 text-center">aoaoaoaoao</td>
+                                    <td class="border-2 py-2 px-4 text-center">{{$row['id']}}</td>
+                                    <td class="border-2 py-2 px-4"><div class="10">{{$row['col 1']}}</div></td>
+                                    <td class="border-2 py-2 px-4">{{$row['col 2']}}</td>
+                                    <td class="border-2 py-2 px-4">{{$row['col 3']}}</td>
+                                    <td class="border-2 py-2 px-4 text-center">{{$row['col 4']}}</td>
+                                    <td class="border-2 py-2 px-4 text-center">{{$row['col 5']}}</td>
                                     <td class="border-2 py-2 px-4 text-center">
                                         <div class="flex gap-2 w-full text-white px-4">
                                             <button class="edit-btn w-[50%] rounded py-1  bg-[#259ee0] hover:bg-[#2eb6ff]">
@@ -86,6 +107,8 @@
                                         </div>
                                     </td>
                                 </tr>
+                                @endforeach
+                                
                                 
                             </tbody>
                         </table>
@@ -93,7 +116,25 @@
                 </div>
             </div>
             <div>
-
+                <!-- Pagination Controls -->
+            <div class="flex justify-end mt-4 gap-2">
+                @php
+                  $start = max(1, $currentPage - 2);
+                  $end = min($totalPages, $currentPage + 2);
+                @endphp
+        
+                @if ($currentPage > 1)
+                  <a href="?page={{ $currentPage - 1 }}&perPage={{ $perPage }}" class="px-3 py-1 rounded bg-gray-100 hover:bg-gray-200">Previous</a>
+                @endif
+        
+                @for ($i = $start; $i <= $end; $i++)
+                  <a href="?page={{ $i }}&perPage={{ $perPage }}" class="px-3 py-1 rounded {{ $i == $currentPage ? 'bg-red-500 text-white' : 'bg-gray-100 hover:bg-gray-200' }}">{{ $i }}</a>
+                @endfor
+        
+                @if ($currentPage < $totalPages)
+                  <a href="?page={{ $currentPage + 1 }}&perPage={{ $perPage }}" class="px-3 py-1 rounded bg-gray-100 hover:bg-gray-200">Next</a>
+                @endif
+              </div>
             </div>
         </div>
     </x-layout>

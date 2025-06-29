@@ -50,89 +50,71 @@
         ?>
       
         <div class="bg-white p-6 rounded-lg shadow h-full flex flex-col">
-          <!-- Section 1 -->
-          <div class="flex items-center justify-between px-4 py-2">
-            <div class="flex items-center gap-2">
-              <form method="GET" class="flex items-center gap-2">
-                <label for="pagination">Tampilkan</label>
-                <input id="pagination" type="number" max="8" name="perPage" value="<?= $perPage ?>" class="w-16 border border-gray-300 rounded px-2 py-1" />
-                <span>data</span>
-                <button type="submit" class="px-2 py-1 bg-red-500 hover:bg-red-400 text-white rounded">Terapkan</button>
-              </form>
+            {{-- section 1  --}}
+            <div class="flex items-center justify-between px-9 py-2">
+                <!-- Tampilkan data -->
+                <form method="GET" class="flex items-center gap-2">
+                    <label for="pagination">Tampilkan</label>
+                    <input id="pagination" type="number" max="8" name="perPage" value="<?= $perPage ?>" class="w-16 border border-gray-300 rounded px-2 py-1" />
+                    <span>data</span>
+                    <button type="submit" class="px-2 py-1 bg-red-500 hover:bg-red-400 text-white rounded">Terapkan</button>
+                  </form>
+              
+                <!-- Search -->
+                <div class="flex items-center gap-2">
+                    <div class="border-gray-300 border-2 rounded">
+                        <input type="text" placeholder="Search here..." class="w-64 focus:border-none outline-0 px-3 py-1 text-sm " />
+                        <i class="fas fa-search text-gray-500 px-1"></i>
+                    </div>
+                    <button type="button" class="bg-red-500 text-white p-1 px-2 rounded-lg font-semibold">
+                        Buat baru
+                    </button>
+                </div>
             </div>
-            <div class="flex items-center gap-2">
-              <div class="border-gray-300 border-2 rounded flex items-center">
-                <input type="text" placeholder="Search here..." class="w-64 focus:border-none outline-0 px-3 py-1 text-sm" />
-                <i class="fas fa-search text-gray-500 px-2"></i>
-              </div>
-              <button type="button" class="bg-red-500 text-white p-1 px-2 rounded-lg font-semibold">Buat baru</button>
+            {{-- <-- Section 2 --> --}}
+            <div class="container w-full px-4 py-0">
+                <div class="table-container">
+                  <table class="min-w-full border-2 border-gray-200 rounded-lg overflow-hidden">
+                    <thead>
+                      <tr class="bg-red-500 text-white">
+                        <th class="border-2 py-2 px-4 w-[5%] header-cell">ID</th>
+                        <th class="border-2 py-2 px-4 w-[20%] header-cell">Nama</th>
+                        <th class="border-2 py-2 px-4 w-[10%] header-cell">NIM</th>
+                        <th class="border-2 py-2 px-4 w-[20%] header-cell">Jurusan</th>
+                        <th class="border-2 py-2 px-4 w-[15%] header-cell">Password</th>
+                        <th class="border-2 py-2 px-4 w-[10%] header-cell">Post</th>
+                        <th class="border-2 py-2 px-4 w-[10%] header-cell">Total Post</th>
+                        <th class="border-2 py-2 px-4 w-[10%] header-cell">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @foreach ($pagedData as $row)
+                        <tr class="table-row even:bg-gray-50">
+                          <td class="border-2 py-2 px-4 text-center">{{ $row['id'] }}</td>
+                          <td class="border-2 py-2 px-4">{{ $row['nama'] }}</td>
+                          <td class="border-2 py-2 px-4">{{ $row['nim'] }}</td>
+                          <td class="border-2 py-2 px-4">{{ $row['jurusan'] }}</td>
+                          <td class="border-2 py-2 px-4 font-mono">{{ $row['password'] }}</td>
+                          <td class="border-2 py-2 px-4 text-center">{{ $row['post'] }}</td>
+                          <td class="border-2 py-2 px-4 text-center">{{ $row['totalPost'] }}</td>
+                          <td class="border-2 py-2 px-4 text-center">
+                            <div class="flex gap-2 w-full text-white">
+                              <button class="edit-btn w-[50%] rounded py-1 bg-[#259ee0] hover:bg-[#2eb6ff]">
+                                <i class="fa-solid fa-pencil"></i>
+                              </button>
+                              <button class="dlt-btn w-[50%] rounded py-1 bg-red-600 hover:bg-red-500">
+                                <i class="fa-solid fa-trash"></i>
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      @endforeach
+                    </tbody>
+                  </table>
+                </div>
             </div>
-          </div>
-      
-          <!-- Section 2 -->
-          <div class="container w-full px-4 py-0">
-            <div class="table-container">
-              <table class="min-w-full border-2 border-gray-200 rounded-lg overflow-hidden">
-                <thead>
-                  <tr class="bg-red-500 text-white">
-                    <th class="border-2 py-2 px-4 w-[5%] header-cell">ID</th>
-                    <th class="border-2 py-2 px-4 w-[20%] header-cell">Nama</th>
-                    <th class="border-2 py-2 px-4 w-[10%] header-cell">NIM</th>
-                    <th class="border-2 py-2 px-4 w-[20%] header-cell">Jurusan</th>
-                    <th class="border-2 py-2 px-4 w-[15%] header-cell">Password</th>
-                    <th class="border-2 py-2 px-4 w-[10%] header-cell">Post</th>
-                    <th class="border-2 py-2 px-4 w-[10%] header-cell">Total Post</th>
-                    <th class="border-2 py-2 px-4 w-[10%] header-cell">Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @foreach ($pagedData as $row)
-                    <tr class="table-row even:bg-gray-50">
-                      <td class="border-2 py-2 px-4 text-center">{{ $row['id'] }}</td>
-                      <td class="border-2 py-2 px-4">{{ $row['nama'] }}</td>
-                      <td class="border-2 py-2 px-4">{{ $row['nim'] }}</td>
-                      <td class="border-2 py-2 px-4">{{ $row['jurusan'] }}</td>
-                      <td class="border-2 py-2 px-4 font-mono">{{ $row['password'] }}</td>
-                      <td class="border-2 py-2 px-4 text-center">{{ $row['post'] }}</td>
-                      <td class="border-2 py-2 px-4 text-center">{{ $row['totalPost'] }}</td>
-                      <td class="border-2 py-2 px-4 text-center">
-                        <div class="flex gap-2 w-full text-white">
-                          <button class="edit-btn w-[50%] rounded py-1 bg-[#259ee0] hover:bg-[#2eb6ff]">
-                            <i class="fa-solid fa-pencil"></i>
-                          </button>
-                          <button class="dlt-btn w-[50%] rounded py-1 bg-red-600 hover:bg-red-500">
-                            <i class="fa-solid fa-trash"></i>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  @endforeach
-                </tbody>
-              </table>
-            </div>
-      
-            <!-- Pagination Controls -->
-            <div class="flex justify-end mt-4 gap-2">
-              @php
-                $start = max(1, $currentPage - 2);
-                $end = min($totalPages, $currentPage + 2);
-              @endphp
-      
-              @if ($currentPage > 1)
-                <a href="?page={{ $currentPage - 1 }}&perPage={{ $perPage }}" class="px-3 py-1 rounded bg-gray-100 hover:bg-gray-200">Previous</a>
-              @endif
-      
-              @for ($i = $start; $i <= $end; $i++)
-                <a href="?page={{ $i }}&perPage={{ $perPage }}" class="px-3 py-1 rounded {{ $i == $currentPage ? 'bg-red-500 text-white' : 'bg-gray-100 hover:bg-gray-200' }}">{{ $i }}</a>
-              @endfor
-      
-              @if ($currentPage < $totalPages)
-                <a href="?page={{ $currentPage + 1 }}&perPage={{ $perPage }}" class="px-3 py-1 rounded bg-gray-100 hover:bg-gray-200">Next</a>
-              @endif
-            </div>
-          </div>
         </div>
-      </x-layout>
+    </x-layout>
 
     <!-- edit modal -->
     <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center z-50">

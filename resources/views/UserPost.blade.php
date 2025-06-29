@@ -38,16 +38,37 @@
 </head>
 <body>
     <x-layout>
+        <?php
+          $data = [];
+          for ($i = 1; $i <= 1000; $i++) {
+            $data[] = [
+              'id' => $i,
+              'nim' => "NIM00$i",
+              'date' => "08/03/25",
+              'desc' => 'consectetur adipisicing elit. Velit in incidunt corporis...',
+              'images' => '/asset/logo.png',
+              'likes' => rand(1, 100),
+              'title' => "post ke-$i"
+            ];
+          }
+      
+          $perPage = $_GET['perPage'] ?? 3;
+          $currentPage = $_GET['page'] ?? 1;
+          $totalPages = ceil(count($data) / $perPage);
+          $offset = ($currentPage - 1) * $perPage;
+          $pagedData = array_slice($data, $offset, $perPage);
+        ?>
         <div class="bg-white p-6 rounded-lg shadow h-full flex flex-col overflow-y-scroll hide-scrollbar">
             <div>
                 {{-- section 1  --}}
                 <div class="flex items-center justify-between px-9 py-2">
                     <!-- Tampilkan data -->
-                    <div class="flex items-center gap-2 ">
-                        <label for="pagination" class="">Tampilkan</label>
-                        <input id="pagination" type="number" name="Pagination" class="w-16 border border-gray-300 rounded px-2 py-1 " />
-                        <span class="">data</span>
-                    </div>
+                    <form method="GET" class="flex items-center gap-2">
+                        <label for="pagination">Tampilkan</label>
+                        <input id="pagination" type="number" max="3" name="perPage" value="<?= $perPage ?>" class="w-16 border border-gray-300 rounded px-2 py-1" />
+                        <span>data</span>
+                        <button type="submit" class="px-2 py-1 bg-red-500 hover:bg-red-400 text-white rounded">Terapkan</button>
+                      </form>
 
                     <!-- Search -->
                     <div class="flex items-center gap-2">
@@ -59,7 +80,6 @@
                             Buat baru
                         </button>
                     </div>
-                    
                 </div>
                 {{-- section 2 --}}
                 <div class="container mx-auto px-4 py-0 h-full overflow-hidden">
@@ -70,68 +90,64 @@
                             <th class="border-2 py-2 px-4 w-[5%] header-cell">ID</th>
                             <th class="border-2 py-2 px-4 w-[10%] header-cell">NIM</th>
                             <th class="border-2 py-2 px-4 w-[10%] header-cell">Date</th>
-                            <th class="border-2 py-2 px-4 w-[20%] header-cell">Desc</th>
-                            <th class="border-2 py-2 px-4 w-[10%] header-cell">Image</th>
+                            <th class="border-2 py-2 px-4 w-[15%] header-cell">Desc</th>
+                            <th class="border-2 py-2 px-4 w-[15%] header-cell">Image</th>
                             <th class="border-2 py-2 px-4 w-[10%] header-cell">Likes</th>
                             <th class="border-2 py-2 px-4 w-[10%] header-cell">Title</th>
                             <th class="border-2 py-2 px-4 w-[10%] header-cell">Action</th>
                           </tr>
                         </thead>
                         <tbody>
-                          <tr class="table-row even:bg-gray-50">
-                            <td class="border-2 py-2 px-4 text-center">1</td>
-                            <td class="border-2 py-2 px-4">670622323</td>
-                            <td class="border-2 py-2 px-4">08/05/04</td>
-                            <td class="border-2 py-2 px-4 break-words max-w-[250px]">
-                              Lorem ipsum dolor sit amet consectetur adipisicing elit. Velit in incidunt corporis...
-                            </td>
-                            <td class="border-2 py-2 px-4 font-mono">
-                              <img class="w-full max-w-[100px] object-contain" src="/asset/logo.png" alt="">
-                            </td>
-                            <td class="border-2 py-2 px-4 text-center">12</td>
-                            <td class="border-2 py-2 px-4 text-center">Logo</td>
-                            <td class="border-2 py-2 px-4 text-center">
-                              <div class="flex gap-2 w-full text-white">
-                                <button class="edit-btn w-[50%] rounded py-1 bg-[#259ee0] hover:bg-[#2eb6ff]">
-                                  <i class="fa-solid fa-pencil"></i>
-                                </button>
-                                <button class="dlt-btn w-[50%] rounded py-1 bg-red-600 hover:bg-red-500">
-                                  <i class="fa-solid fa-trash"></i>
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                          <tr class="table-row even:bg-gray-50">
-                            <td class="border-2 py-2 px-4 text-center">1</td>
-                            <td class="border-2 py-2 px-4">670622323</td>
-                            <td class="border-2 py-2 px-4">08/05/04</td>
-                            <td class="border-2 py-2 px-4 break-words max-w-[250px]">
-                              Lorem ipsum dolor sit amet consectetur adipisicing elit. Velit in incidunt corporis...
-                            </td>
-                            <td class="border-2 py-2 px-4 font-mono">
-                              <img class="w-full max-w-[100px] object-contain" src="/asset/logo.png" alt="">
-                            </td>
-                            <td class="border-2 py-2 px-4 text-center">12</td>
-                            <td class="border-2 py-2 px-4 text-center">Logo</td>
-                            <td class="border-2 py-2 px-4 text-center">
-                              <div class="flex gap-2 w-full text-white">
-                                <button class="edit-btn w-[50%] rounded py-1 bg-[#259ee0] hover:bg-[#2eb6ff]">
-                                  <i class="fa-solid fa-pencil"></i>
-                                </button>
-                                <button class="dlt-btn w-[50%] rounded py-1 bg-red-600 hover:bg-red-500">
-                                  <i class="fa-solid fa-trash"></i>
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-
+                            @foreach ($pagedData as $row)
+                            <tr class="table-row even:bg-gray-50">
+                                <td class="border-2 py-2 px-4 text-center">{{$row['id']}}</td>
+                                <td class="border-2 py-2 px-4">{{$row['nim']}}</td>
+                                <td class="border-2 py-2 px-4">{{$row['date']}}</td>
+                                <td class="border-2 py-2 px-4 break-words max-w-[250px]">
+                                  {{$row["desc"]}}
+                                </td>
+                                <td class="border-2 py-2 px-4 font-mono">
+                                  <img class="w-full  max-h-[100px] object-contain" src="{{$row['images']}}" alt="">
+                                </td>
+                                <td class="border-2 py-2 px-4 text-center">{{$row['likes']}}</td>
+                                <td class="border-2 py-2 px-4 text-center">{{$row['title']}}</td>
+                                <td class="border-2 py-2 px-4 text-center">
+                                  <div class="flex gap-2 w-full text-white">
+                                    <button class="edit-btn w-[50%] rounded py-1 bg-[#259ee0] hover:bg-[#2eb6ff]">
+                                      <i class="fa-solid fa-pencil"></i>
+                                    </button>
+                                    <button class="dlt-btn w-[50%] rounded py-1 bg-red-600 hover:bg-red-500">
+                                      <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            @endforeach
                         </tbody>
                       </table>
                     </div>
                   </div>
-            </div>
+                </div>
             <div>
-
+            <!-- Pagination Controls -->
+            <div class="flex justify-end mt-4 gap-2">
+                @php
+                  $start = max(1, $currentPage - 2);
+                  $end = min($totalPages, $currentPage + 2);
+                @endphp
+        
+                @if ($currentPage > 1)
+                  <a href="?page={{ $currentPage - 1 }}&perPage={{ $perPage }}" class="px-3 py-1 rounded bg-gray-100 hover:bg-gray-200">Previous</a>
+                @endif
+        
+                @for ($i = $start; $i <= $end; $i++)
+                  <a href="?page={{ $i }}&perPage={{ $perPage }}" class="px-3 py-1 rounded {{ $i == $currentPage ? 'bg-red-500 text-white' : 'bg-gray-100 hover:bg-gray-200' }}">{{ $i }}</a>
+                @endfor
+        
+                @if ($currentPage < $totalPages)
+                  <a href="?page={{ $currentPage + 1 }}&perPage={{ $perPage }}" class="px-3 py-1 rounded bg-gray-100 hover:bg-gray-200">Next</a>
+                @endif
+            </div>
             </div>
         </div>
     </x-layout>
@@ -165,7 +181,7 @@
             </form>
         </div>
     </div>
-        <!-- Modal Delete-->
+
     <!-- Modal Delete -->
 <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center z-[999]">
     <div class="bg-white w-[90%] max-w-md rounded-lg p-6 shadow-lg mx-4">
