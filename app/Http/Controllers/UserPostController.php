@@ -4,62 +4,62 @@ namespace App\Http\Controllers;
 
 use App\Models\UserPost;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserPostController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
-        //
+        $posts = UserPost::with('user')->latest()->get();
+        return view('UserPost', compact('posts'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'content' => 'required|string',
+            'type' => 'in:text,image,file'
+        ]);
+
+        $post = UserPost::create([
+            'user_id' => Auth::id(),
+            'content' => $data['content'],
+            'type' => $data['type'] ?? 'text'
+        ]);
+        
+        return redirect()->back()->with('success', 'Post berhasil dibuat!');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(UserPost $userPost)
+    public function update(Request $request, $id)
     {
-        //
+        $data = $request->validate([
+            'content' => 'required|string'
+        ]);
+
+        $post = UserPost::findOrFail($id);
+        
+        // Check if user owns the post
+        if ($post->user_id !== Auth::id()) {
+            return redirect()->back()->with('error', 'Anda tidak memiliki izin untuk mengedit post ini!');
+        }
+        
+        $post->update(['content' => $data['content']]);
+        
+        return redirect()->back()->with('success', 'Post berhasil diupdate!');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(UserPost $userPost)
+    public function destroy($id)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, UserPost $userPost)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(UserPost $userPost)
-    {
-        //
+        $post = UserPost::findOrFail($id);
+        
+        // Check if user owns the post
+        if ($post->user_id !== Auth::id()) {
+            return redirect()->back()->with('error', 'Anda tidak memiliki izin untuk menghapus post ini!');
+        }
+        
+        $post->delete();
+        
+        return redirect()->back()->with('success', 'Post berhasil dihapus!');
     }
 }
