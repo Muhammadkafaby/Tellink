@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserPostController;
+use App\Http\Controllers\TellinkProxyController;
 use App\Http\Middleware\TellinkAuth;
 
 Route::get('/', function () { return view('welcome'); });
@@ -33,6 +34,15 @@ Route::middleware([TellinkAuth::class])->group(function () {
     
     // Report routes (coming soon)
     Route::get('/report', function () { return view('Report'); });
+    
+    // Tellink API Proxy routes
+    Route::prefix('api/tellink')->group(function () {
+        Route::get('/users', [TellinkProxyController::class, 'getUsers']);
+        Route::get('/messages', [TellinkProxyController::class, 'getMessages']);
+        Route::post('/messages', [TellinkProxyController::class, 'createMessage']);
+        Route::put('/messages/{id}', [TellinkProxyController::class, 'updateMessage']);
+        Route::delete('/messages/{id}', [TellinkProxyController::class, 'deleteMessage']);
+    });
 });
   
 

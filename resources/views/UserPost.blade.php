@@ -38,26 +38,50 @@
 </head>
 <body>
     <x-layout>
-        <?php
-          $data = [];
-          for ($i = 1; $i <= 1000; $i++) {
-            $data[] = [
-              'id' => $i,
-              'nim' => "NIM00$i",
-              'date' => "08/03/25",
-              'desc' => 'consectetur adipisicing elit. Velit in incidunt corporis...',
-              'images' => '/asset/logo.png',
-              'likes' => rand(1, 100),
-              'title' => "post ke-$i"
-            ];
-          }
-      
-          $perPage = $_GET['perPage'] ?? 3;
-          $currentPage = $_GET['page'] ?? 1;
-          $totalPages = ceil(count($data) / $perPage);
-          $offset = ($currentPage - 1) * $perPage;
-          $pagedData = array_slice($data, $offset, $perPage);
-        ?>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        fetchPosts();
+      });
+
+      async function fetchPosts() {
+        try {
+          const response = await axios.get('{{ config('tellink.api_base_url') }}/api/messages');
+          const data = response.data;
+          const postsContainer = document.getElementById('posts-container');
+          postsContainer.innerHTML = '';
+          
+          data.forEach(post => {
+            const row = document.createElement('tr');
+            row.classList.add('table-row', 'even:bg-gray-50');
+
+            row.innerHTML = `
+              <td class="border-2 py-2 px-4 text-center">${post.id}</td>
+              <td class="border-2 py-2 px-4">${post.nim}</td>
+              <td class="border-2 py-2 px-4">${post.date}</td>
+              <td class="border-2 py-2 px-4 break-words max-w-[250px]">${post.desc}</td>
+              <td class="border-2 py-2 px-4 font-mono"><img class="w-full max-h-[100px] object-contain" src="${post.images}" alt=""></td>
+              <td class="border-2 py-2 px-4 text-center">${post.likes}</td>
+              <td class="border-2 py-2 px-4 text-center">${post.title}</td>
+              <td class="border-2 py-2 px-4 text-center">
+                <div class="flex gap-2 w-full text-white">
+                  <button class="edit-btn w-[50%] rounded py-1 bg-[#259ee0] hover:bg-[#2eb6ff]">
+                    <i class="fa-solid fa-pencil"></i>
+                  </button>
+                  <button class="dlt-btn w-[50%] rounded py-1 bg-red-600 hover:bg-red-500">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            `;
+
+            postsContainer.appendChild(row);
+          });
+        } catch (error) {
+          console.error('Error fetching posts:', error);
+        }
+      }
+    </script>
         <div class="bg-white p-6 rounded-lg shadow h-full flex flex-col overflow-y-scroll hide-scrollbar">
             <div>
                 {{-- section 1  --}}
@@ -65,7 +89,7 @@
                     <!-- Tampilkan data -->
                     <form method="GET" class="flex items-center gap-2">
                         <label for="pagination">Tampilkan</label>
-                        <input id="pagination" type="number" max="3" name="perPage" value="<?= $perPage ?>" class="w-16 border border-gray-300 rounded px-2 py-1" />
+                    <input id="pagination" type="number" max="3" name="perPage" value="3" class="w-16 border border-gray-300 rounded px-2 py-1" />
                         <span>data</span>
                         <button type="submit" class="px-2 py-1 bg-red-500 hover:bg-red-400 text-white rounded">Terapkan</button>
                       </form>
@@ -97,57 +121,15 @@
                             <th class="border-2 py-2 px-4 w-[10%] header-cell">Action</th>
                           </tr>
                         </thead>
-                        <tbody>
-                            @foreach ($pagedData as $row)
-                            <tr class="table-row even:bg-gray-50">
-                                <td class="border-2 py-2 px-4 text-center">{{$row['id']}}</td>
-                                <td class="border-2 py-2 px-4">{{$row['nim']}}</td>
-                                <td class="border-2 py-2 px-4">{{$row['date']}}</td>
-                                <td class="border-2 py-2 px-4 break-words max-w-[250px]">
-                                  {{$row["desc"]}}
-                                </td>
-                                <td class="border-2 py-2 px-4 font-mono">
-                                  <img class="w-full  max-h-[100px] object-contain" src="{{$row['images']}}" alt="">
-                                </td>
-                                <td class="border-2 py-2 px-4 text-center">{{$row['likes']}}</td>
-                                <td class="border-2 py-2 px-4 text-center">{{$row['title']}}</td>
-                                <td class="border-2 py-2 px-4 text-center">
-                                  <div class="flex gap-2 w-full text-white">
-                                    <button class="edit-btn w-[50%] rounded py-1 bg-[#259ee0] hover:bg-[#2eb6ff]">
-                                      <i class="fa-solid fa-pencil"></i>
-                                    </button>
-                                    <button class="dlt-btn w-[50%] rounded py-1 bg-red-600 hover:bg-red-500">
-                                      <i class="fa-solid fa-trash"></i>
-                                    </button>
-                                  </div>
-                                </td>
-                              </tr>
-                            @endforeach
-                        </tbody>
+                    <tbody id="posts-container">
+                        <!-- Data will be loaded by JS fetch -->
+                    </tbody>
                       </table>
                     </div>
                   </div>
                 </div>
             <div>
-            <!-- Pagination Controls -->
-            <div class="flex justify-end mt-4 gap-2">
-                @php
-                  $start = max(1, $currentPage - 2);
-                  $end = min($totalPages, $currentPage + 2);
-                @endphp
-        
-                @if ($currentPage > 1)
-                  <a href="?page={{ $currentPage - 1 }}&perPage={{ $perPage }}" class="px-3 py-1 rounded bg-gray-100 hover:bg-gray-200">Previous</a>
-                @endif
-        
-                @for ($i = $start; $i <= $end; $i++)
-                  <a href="?page={{ $i }}&perPage={{ $perPage }}" class="px-3 py-1 rounded {{ $i == $currentPage ? 'bg-red-500 text-white' : 'bg-gray-100 hover:bg-gray-200' }}">{{ $i }}</a>
-                @endfor
-        
-                @if ($currentPage < $totalPages)
-                  <a href="?page={{ $currentPage + 1 }}&perPage={{ $perPage }}" class="px-3 py-1 rounded bg-gray-100 hover:bg-gray-200">Next</a>
-                @endif
-            </div>
+                <!-- Pagination handled by JavaScript if needed -->
             </div>
         </div>
     </x-layout>
