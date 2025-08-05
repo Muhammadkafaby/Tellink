@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -15,12 +16,47 @@ class UserController extends Controller
         return view('ListUser', compact('users'));
     }
 
+    public function profile()
+    {
+        $user = Auth::user();
+        return view('profile', compact('user'));
+    }
+    
     public function show($id)
     {
         $user = User::findOrFail($id);
         return view('profile', compact('user'));
     }
 
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user();
+        
+        $request->validate([
+            'name' => 'nullable|string|max:255',
+            'email' => 'nullable|email|max:255|unique:users,email,'.$user->id,
+            'password' => 'required|string'
+        ]);
+        
+        // Verify password
+        if (!Hash::check($request->password, $user->password)) {
+            return redirect()->back()->withErrors(['password' => 'Password salah!'])->withInput();
+        }
+        
+        // Update data if password is correct
+        if ($request->filled('name')) {
+            $user->name = $request->name;
+        }
+        
+        if ($request->filled('email')) {
+            $user->email = $request->email;
+        }
+        
+        $user->save();
+        
+        return redirect()->back()->with('success', 'Profile berhasil diupdate!');
+    }
+    
     public function update(Request $request, $id)
     {
         $data = $request->validate([

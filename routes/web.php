@@ -19,10 +19,11 @@ Route::get('/logout', [AuthController::class, 'logout']);
 Route::middleware([TellinkAuth::class])->group(function () {
     // User routes
     Route::get('/listuser', [UserController::class, 'index']);
-    Route::get('/profile', [UserController::class, 'show']);
-    Route::post('/profile/update', [UserController::class, 'update']);
+    Route::get('/profile', [UserController::class, 'profile']); // Current user profile
+    Route::get('/user/{id}', [UserController::class, 'show']); // View other user profile
+    Route::post('/profile/update', [UserController::class, 'updateProfile']);
     Route::post('/profile/upload-avatar', [UserController::class, 'uploadAvatar']);
-    Route::delete('/profile/delete', [UserController::class, 'destroy']);
+    Route::delete('/user/{id}', [UserController::class, 'destroy']);
     
     // UserPost/Messages routes
     Route::get('/userpost', [UserPostController::class, 'index']);
