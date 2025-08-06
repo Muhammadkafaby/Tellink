@@ -48,14 +48,33 @@ class TellinkProxyController extends Controller
     public function deleteUser(Request $request)
     {
         try {
-            $response = Http::post($this->apiBaseUrl . '/api/deletemahasiswa', $request->all());
+            // Log the request for debugging
+            \Log::info('Delete user request:', $request->all());
+            
+            // API expects only 'nim' in the request body
+            $data = [
+                'nim' => $request->get('nim')
+            ];
+            
+            $response = Http::post($this->apiBaseUrl . '/api/deletemahasiswa', $data);
+            
+            \Log::info('Delete user response:', [
+                'status' => $response->status(),
+                'body' => $response->json()
+            ]);
             
             if ($response->successful()) {
                 return response()->json($response->json());
             }
             
-            return response()->json(['error' => 'Failed to delete user'], 500);
+            // Return more detailed error message
+            return response()->json([
+                'error' => 'Failed to delete user',
+                'message' => $response->json()['message'] ?? 'Unknown error',
+                'status' => $response->status()
+            ], $response->status() ?: 500);
         } catch (\Exception $e) {
+            \Log::error('Delete user exception:', ['error' => $e->getMessage()]);
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }

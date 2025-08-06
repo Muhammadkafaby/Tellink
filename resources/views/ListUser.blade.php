@@ -916,19 +916,52 @@ async function deleteUser(nim) {
   if (!result.isConfirmed) return;
   
   try {
+    console.log('Deleting user with NIM:', nim);
+    
     const response = await fetch('/api/tellink/delete-user', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nim })
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+      },
+      body: JSON.stringify({ nim: nim })
     });
     
-    if (!response.ok) throw new Error('Delete failed');
+    const data = await response.json();
+    console.log('Delete response:', data);
     
-    Swal.fire('Terhapus!', 'Data mahasiswa berhasil dihapus.', 'success');
-    loadUsers();
+    if (!response.ok) {
+      // Check if it's an authorization error
+      if (response.status === 401 || response.status === 403) {
+        throw new Error('Anda tidak memiliki akses untuk menghapus data ini (admin only)');
+      }
+      throw new Error(data.message || data.error || 'Delete failed');
+    }
+    
+    // Check if the response indicates success
+    if (data.success || response.ok) {
+      await Swal.fire({
+        icon: 'success',
+        title: 'Terhapus!',
+        text: 'Data mahasiswa berhasil dihapus.',
+        timer: 2000,
+        showConfirmButton: false
+      });
+      
+      // Reload the user list
+      loadUsers();
+    } else {
+      throw new Error(data.message || 'Delete failed');
+    }
   } catch(e) {
     console.error('Error deleting user:', e);
-    Swal.fire('Error!', 'Gagal menghapus data. Silakan coba lagi.', 'error');
+    Swal.fire({
+      icon: 'error',
+      title: 'Gagal Menghapus!',
+      text: e.message || 'Gagal menghapus data. Silakan coba lagi.',
+      confirmButtonColor: '#3085d6'
+    });
   }
 }
 
