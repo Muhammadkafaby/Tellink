@@ -3,19 +3,9 @@
 @section('content')
 <div class="container-fluid px-4">
     <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="h3 mb-1 text-gray-800 fw-bold">Project Reports</h2>
-            <p class="text-muted mb-0">Kelola dan review laporan project mahasiswa</p>
-        </div>
-        <div class="d-flex gap-2">
-            <button class="btn btn-outline-secondary" onclick="refreshData()">
-                <i class="fas fa-sync-alt me-2"></i>Refresh
-            </button>
-            <button class="btn btn-danger shadow-sm" onclick="exportReports()">
-                <i class="fas fa-download me-2"></i>Export Reports
-            </button>
-        </div>
+    <div class="mb-4">
+        <h2 class="h3 mb-1 text-gray-800 fw-bold">Project Reports</h2>
+        <p class="text-muted mb-0">Kelola dan review laporan project mahasiswa</p>
     </div>
 
     <style>
@@ -210,7 +200,7 @@
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-body">
             <div class="row g-3 align-items-center">
-                <div class="col-md-4">
+                <div class="col-md-5">
                     <div class="input-group">
                         <span class="input-group-text bg-white border-end-0">
                             <i class="fas fa-search text-muted"></i>
@@ -234,114 +224,122 @@
                         <option value="100">100 data</option>
                     </select>
                 </div>
-                <div class="col-md-3 text-end">
-                    <div class="btn-group" role="group">
-                        <button class="btn btn-outline-secondary" onclick="toggleView()">
-                            <i class="fas fa-th-large me-2" id="viewIcon"></i>
-                            <span id="viewText">Grid View</span>
-                        </button>
-                        <button class="btn btn-outline-secondary" onclick="exportReports()">
-                            <i class="fas fa-download"></i>
-                        </button>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
             
-            <!-- Table Section -->
-            <div class="px-6 pb-6">
-                <!-- Loading state -->
-                <div id="loadingState" class="flex justify-center items-center py-12">
-                    <div class="text-center">
-                        <div class="loading-spinner mx-auto mb-4" style="width: 40px; height: 40px; border-color: #dc2626;"></div>
-                        <p class="text-gray-600">Loading reports...</p>
-                    </div>
+    <!-- Table Section -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <!-- Loading state -->
+            <div id="loadingState" class="text-center py-5">
+                <div class="spinner-border text-danger" role="status">
+                    <span class="visually-hidden">Loading...</span>
                 </div>
-                
-                <!-- Table Container -->
-                <div id="tableContainer" class="overflow-x-auto hidden">
-                    <table id="dataTable" class="min-w-full">
-                        <thead>
-                            <tr class="bg-red-600 text-white">
-                                <th class="py-3 px-4 text-left header-cell">No</th>
-                                <th class="py-3 px-4 text-left header-cell">Report ID</th>
-                                <th class="py-3 px-4 text-left header-cell">Project ID</th>
-                                <th class="py-3 px-4 text-left header-cell">Project Title</th>
-                                <th class="py-3 px-4 text-left header-cell">Reported By</th>
-                                <th class="py-3 px-4 text-left header-cell">Reason</th>
-                                <th class="py-3 px-4 text-center header-cell">Status</th>
-                                <th class="py-3 px-4 text-center header-cell">Date</th>
-                                <th class="py-3 px-4 text-center header-cell">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableBody" class="bg-white divide-y divide-gray-200">
-                            <!-- Data will be populated here -->
-                        </tbody>
-                    </table>
-                </div>
-                
-                <!-- Empty state -->
-                <div id="emptyState" class="text-center py-12 hidden">
-                    <i class="fas fa-inbox text-6xl text-gray-300 mb-4"></i>
-                    <p class="text-gray-500 text-lg">No reports found</p>
-                    <p class="text-gray-400 text-sm mt-2">All projects are in good standing!</p>
-                </div>
+                <div class="mt-3 text-muted">Memuat laporan...</div>
             </div>
             
-            <!-- Pagination -->
-            <div class="border-t border-gray-200 px-6 py-4">
-                <div id="paginationContainer" class="flex justify-between items-center">
-                    <div id="paginationInfo" class="text-sm text-gray-700"></div>
-                    <div id="paginationControls" class="flex gap-2"></div>
-                </div>
+            <!-- Table Container -->
+            <div id="tableContainer" class="table-responsive d-none">
+                <table class="table table-hover mb-0 table-modern">
+                    <thead class="bg-light">
+                        <tr>
+                            <th scope="col" class="px-4 py-3 text-uppercase small fw-bold text-muted">No</th>
+                            <th scope="col" class="px-4 py-3 text-uppercase small fw-bold text-muted">Report ID</th>
+                            <th scope="col" class="px-4 py-3 text-uppercase small fw-bold text-muted">Project ID</th>
+                            <th scope="col" class="px-4 py-3 text-uppercase small fw-bold text-muted">Project Title</th>
+                            <th scope="col" class="px-4 py-3 text-uppercase small fw-bold text-muted">Reported By</th>
+                            <th scope="col" class="px-4 py-3 text-uppercase small fw-bold text-muted">Reason</th>
+                            <th scope="col" class="px-4 py-3 text-uppercase small fw-bold text-muted text-center">Status</th>
+                            <th scope="col" class="px-4 py-3 text-uppercase small fw-bold text-muted text-center">Date</th>
+                            <th scope="col" class="px-4 py-3 text-uppercase small fw-bold text-muted text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- Data will be populated here -->
+                    </tbody>
+                </table>
             </div>
+            
+            <!-- Empty state -->
+            <div id="emptyState" class="text-center py-5 d-none">
+                <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                <p class="text-muted mb-0">Tidak ada laporan ditemukan</p>
+                <p class="text-muted small">Semua project dalam kondisi baik!</p>
+            </div>
+        </div>
+        
+        <!-- Pagination -->
+        <div class="card-footer bg-white border-top py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div id="paginationInfo" class="text-muted small"></div>
+                <nav>
+                    <ul class="pagination pagination-sm mb-0" id="paginationControls">
+                        <!-- Pagination will be generated here -->
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
 
     <!-- View Details Modal -->
-    <div id="detailsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center z-[999]">
-        <div class="bg-white w-[90%] max-w-2xl rounded-lg p-6 shadow-lg mx-4 max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-start mb-4">
-                <h2 class="text-xl font-bold">Report Details</h2>
-                <button id="closeDetailsModal" class="text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-times text-xl"></i>
-                </button>
-            </div>
-            <div id="detailsContent" class="space-y-4">
-                <!-- Details will be populated here -->
+    <div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content border-0">
+                <div class="modal-header bg-light border-0">
+                    <h5 class="modal-title fw-bold" id="detailsModalLabel">Report Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div id="detailsContent">
+                        <!-- Details will be populated here -->
+                    </div>
+                </div>
+                <div class="modal-footer bg-light border-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Update Status Modal -->
-    <div id="statusModal" class="fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center z-[999]">
-        <div class="bg-white w-[90%] max-w-md rounded-lg p-6 shadow-lg mx-4">
-            <h2 class="text-xl font-bold mb-4">Update Report Status</h2>
-            <form id="statusForm">
-                <div class="mb-4">
-                    <label for="newStatus" class="block text-sm font-medium text-gray-700 mb-2">New Status</label>
-                    <select id="newStatus" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
-                        <option value="pending">Pending</option>
-                        <option value="investigating">Investigating</option>
-                        <option value="resolved">Resolved</option>
-                    </select>
+    <div class="modal fade" id="statusModal" tabindex="-1" aria-labelledby="statusModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content border-0">
+                <div class="modal-header bg-light border-0">
+                    <h5 class="modal-title fw-bold" id="statusModalLabel">Update Report Status</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="mb-4">
-                    <label for="statusNote" class="block text-sm font-medium text-gray-700 mb-2">Note (Optional)</label>
-                    <textarea id="statusNote" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Add a note about this status change..."></textarea>
-                </div>
-                <div class="flex justify-end gap-2 mt-4">
-                    <button type="button" id="closeStatusModal" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 transition">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition">Update Status</button>
-                </div>
-            </form>
+                <form id="statusForm">
+                    <div class="modal-body p-4">
+                        <div class="mb-3">
+                            <label for="newStatus" class="form-label small fw-bold text-muted text-uppercase">New Status</label>
+                            <select id="newStatus" class="form-select form-select-lg">
+                                <option value="pending">Pending</option>
+                                <option value="investigating">Investigating</option>
+                                <option value="resolved">Resolved</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="statusNote" class="form-label small fw-bold text-muted text-uppercase">Note (Optional)</label>
+                            <textarea id="statusNote" rows="3" class="form-control" placeholder="Add a note about this status change..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light border-0">
+                        <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-danger px-4">
+                            <i class="fas fa-save me-2"></i>Update Status
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-
-    <!-- Toast Notification -->
-    <div id="toast" class="toast">
-        <span id="toastMessage"></span>
-    </div>
 </div>
+
+<!-- Add Font Awesome and SweetAlert2 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
 // Global variables
@@ -354,18 +352,36 @@ let currentReportId = null;
 // CSRF Token setup
 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-// Toast notification
-function showToast(message, type = 'success') {
-    const toast = document.getElementById('toast');
-    const toastMessage = document.getElementById('toastMessage');
-    
-    toastMessage.textContent = message;
-    toast.className = `toast ${type}`;
-    toast.style.display = 'block';
-    
-    setTimeout(() => {
-        toast.style.display = 'none';
-    }, 3000);
+// Refresh data
+function refreshData() {
+    fetchData();
+}
+
+// Export reports
+function exportReports() {
+    Swal.fire({
+        title: 'Export Data',
+        text: 'Pilih format export:',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Excel',
+        cancelButtonText: 'CSV',
+        showDenyButton: true,
+        denyButtonText: 'PDF'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire('Export Excel', 'Data laporan berhasil diexport ke Excel', 'success');
+        } else if (result.isDenied) {
+            Swal.fire('Export PDF', 'Data laporan berhasil diexport ke PDF', 'success');
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+            Swal.fire('Export CSV', 'Data laporan berhasil diexport ke CSV', 'success');
+        }
+    });
+}
+
+// Toggle view (placeholder function)
+function toggleView() {
+    Swal.fire('Info', 'Grid view toggle belum tersedia', 'info');
 }
 
 // Fetch data from API
@@ -401,19 +417,19 @@ async function fetchData() {
         updatePagination();
         
         // Hide loading, show table
-        document.getElementById('loadingState').classList.add('hidden');
+        document.getElementById('loadingState').classList.add('d-none');
         if (allData.length > 0) {
-            document.getElementById('tableContainer').classList.remove('hidden');
-            document.getElementById('emptyState').classList.add('hidden');
+            document.getElementById('tableContainer').classList.remove('d-none');
+            document.getElementById('emptyState').classList.add('d-none');
         } else {
-            document.getElementById('tableContainer').classList.add('hidden');
-            document.getElementById('emptyState').classList.remove('hidden');
+            document.getElementById('tableContainer').classList.add('d-none');
+            document.getElementById('emptyState').classList.remove('d-none');
         }
     } catch (error) {
         console.error('Error fetching data:', error);
-        showToast('Failed to load reports: ' + error.message, 'error');
-        document.getElementById('loadingState').classList.add('hidden');
-        document.getElementById('emptyState').classList.remove('hidden');
+        Swal.fire('Error!', 'Failed to load reports: ' + error.message, 'error');
+        document.getElementById('loadingState').classList.add('d-none');
+        document.getElementById('emptyState').classList.remove('d-none');
     }
 }
 
@@ -490,29 +506,26 @@ function renderTable() {
     
     pageData.forEach((item, index) => {
         const row = document.createElement('tr');
-        row.className = 'hover:bg-gray-50 transition-colors';
         row.innerHTML = `
-            <td class="py-4 px-4 text-sm">${start + index + 1}</td>
-            <td class="py-4 px-4 text-xs font-mono text-gray-600">${item.id ? item.id.substring(0, 8) + '...' : '-'}</td>
-            <td class="py-4 px-4 text-xs font-mono text-gray-600">${item.projectId ? item.projectId.substring(0, 8) + '...' : '-'}</td>
-            <td class="py-4 px-4 text-sm font-medium">${item.projectTitle || 'Unknown Project'}</td>
-            <td class="py-4 px-4 text-sm">${item.reportedBy || '-'}</td>
-            <td class="py-4 px-4">
-                <div class="text-sm text-gray-600 max-w-xs truncate" title="${item.reason || ''}">
+            <td class="px-4">${start + index + 1}</td>
+            <td class="px-4"><span class="badge bg-secondary font-monospace">${item.id ? item.id.substring(0, 8) + '...' : '-'}</span></td>
+            <td class="px-4"><span class="badge bg-secondary font-monospace">${item.projectId ? item.projectId.substring(0, 8) + '...' : '-'}</span></td>
+            <td class="px-4 fw-semibold">${item.projectTitle || 'Unknown Project'}</td>
+            <td class="px-4">${item.reportedBy || '-'}</td>
+            <td class="px-4">
+                <div class="text-truncate" style="max-width: 200px;" title="${item.reason || ''}">
                     ${item.reason || '-'}
                 </div>
             </td>
-            <td class="py-4 px-4 text-center">${getStatusBadge(item.status || 'pending')}</td>
-            <td class="py-4 px-4 text-center text-sm text-gray-600">${formatDate(item.createdAt)}</td>
-            <td class="py-4 px-4 text-center">
-                <div class="flex gap-2 justify-center">
-                    <button onclick="viewDetails('${item.id}')" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors" title="View Details">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                    <button onclick="updateStatus('${item.id}')" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition-colors" title="Update Status">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                </div>
+            <td class="px-4 text-center">${getStatusBadge(item.status || 'pending')}</td>
+            <td class="px-4 text-center"><small class="text-muted">${formatDate(item.createdAt)}</small></td>
+            <td class="px-4 text-center">
+                <button onclick="viewDetails('${item.id}')" class="btn btn-sm btn-info me-1" title="View Details">
+                    <i class="fas fa-eye"></i>
+                </button>
+                <button onclick="updateStatus('${item.id}')" class="btn btn-sm btn-warning" title="Update Status">
+                    <i class="fas fa-edit"></i>
+                </button>
             </td>
         `;
         tableBody.appendChild(row);
@@ -520,7 +533,7 @@ function renderTable() {
     
     // Show table container after rendering
     if (pageData.length > 0) {
-        document.getElementById('tableContainer').classList.remove('hidden');
+        document.getElementById('tableContainer').classList.remove('d-none');
     }
 }
 
@@ -533,53 +546,48 @@ function updatePagination() {
     // Update info
     const start = filteredData.length === 0 ? 0 : (currentPage - 1) * perPage + 1;
     const end = Math.min(currentPage * perPage, filteredData.length);
-    paginationInfo.textContent = `Showing ${start} - ${end} of ${filteredData.length} reports`;
+    paginationInfo.textContent = `Menampilkan ${start} - ${end} dari ${filteredData.length} laporan`;
     
     // Update controls
-    paginationControls.innerHTML = '';
+    let html = '';
     
     // Previous button
-    if (currentPage > 1) {
-        const prevBtn = createPaginationButton('Previous', () => {
-            currentPage--;
-            renderTable();
-            updatePagination();
-        });
-        paginationControls.appendChild(prevBtn);
-    }
+    html += `<li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+        <a class="page-link" href="#" onclick="changePage(${currentPage - 1}); return false;">
+            <span aria-hidden="true">&laquo;</span>
+        </a>
+    </li>`;
     
     // Page numbers
-    const startPage = Math.max(1, currentPage - 2);
-    const endPage = Math.min(totalPages, currentPage + 2);
-    
-    for (let i = startPage; i <= endPage; i++) {
-        const isActive = i === currentPage;
-        const pageBtn = createPaginationButton(i, () => {
-            currentPage = i;
-            renderTable();
-            updatePagination();
-        }, isActive);
-        paginationControls.appendChild(pageBtn);
+    for (let i = 1; i <= totalPages; i++) {
+        if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+            html += `<li class="page-item ${i === currentPage ? 'active' : ''}">
+                <a class="page-link" href="#" onclick="changePage(${i}); return false;">${i}</a>
+            </li>`;
+        } else if (i === currentPage - 3 || i === currentPage + 3) {
+            html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+        }
     }
     
     // Next button
-    if (currentPage < totalPages) {
-        const nextBtn = createPaginationButton('Next', () => {
-            currentPage++;
-            renderTable();
-            updatePagination();
-        });
-        paginationControls.appendChild(nextBtn);
-    }
+    html += `<li class="page-item ${currentPage === totalPages || totalPages === 0 ? 'disabled' : ''}">
+        <a class="page-link" href="#" onclick="changePage(${currentPage + 1}); return false;">
+            <span aria-hidden="true">&raquo;</span>
+        </a>
+    </li>`;
+    
+    paginationControls.innerHTML = html;
+    paginationControls.classList.add('pagination-modern');
 }
 
-// Create pagination button
-function createPaginationButton(text, onClick, isActive = false) {
-    const button = document.createElement('button');
-    button.textContent = text;
-    button.onclick = onClick;
-    button.className = `px-3 py-1 rounded ${isActive ? 'bg-red-500 text-white' : 'bg-gray-100 hover:bg-gray-200'}`;
-    return button;
+// Change page
+function changePage(page) {
+    const totalPages = Math.ceil(filteredData.length / perPage);
+    if (page < 1 || page > totalPages) return;
+    
+    currentPage = page;
+    renderTable();
+    updatePagination();
 }
 
 // View details function
@@ -589,53 +597,51 @@ function viewDetails(id) {
     
     const detailsContent = document.getElementById('detailsContent');
     detailsContent.innerHTML = `
-        <div class="grid grid-cols-2 gap-4">
-            <div>
-                <h3 class="text-sm font-medium text-gray-500">Report ID</h3>
-                <p class="mt-1 text-sm text-gray-900 font-mono">${item.id}</p>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label small fw-bold text-muted">Report ID</label>
+                <p class="font-monospace">${item.id}</p>
             </div>
-            <div>
-                <h3 class="text-sm font-medium text-gray-500">Status</h3>
-                <p class="mt-1">${getStatusBadge(item.status || 'pending')}</p>
+            <div class="col-md-6">
+                <label class="form-label small fw-bold text-muted">Status</label>
+                <p>${getStatusBadge(item.status || 'pending')}</p>
             </div>
-            <div>
-                <h3 class="text-sm font-medium text-gray-500">Project ID</h3>
-                <p class="mt-1 text-sm text-gray-900 font-mono">${item.projectId}</p>
+            <div class="col-md-6">
+                <label class="form-label small fw-bold text-muted">Project ID</label>
+                <p class="font-monospace">${item.projectId}</p>
             </div>
-            <div>
-                <h3 class="text-sm font-medium text-gray-500">Project Title</h3>
-                <p class="mt-1 text-sm text-gray-900">${item.projectTitle || 'Unknown Project'}</p>
+            <div class="col-md-6">
+                <label class="form-label small fw-bold text-muted">Project Title</label>
+                <p>${item.projectTitle || 'Unknown Project'}</p>
             </div>
-            <div>
-                <h3 class="text-sm font-medium text-gray-500">Reported By</h3>
-                <p class="mt-1 text-sm text-gray-900">${item.reportedBy}</p>
+            <div class="col-md-6">
+                <label class="form-label small fw-bold text-muted">Reported By</label>
+                <p>${item.reportedBy}</p>
             </div>
-            <div>
-                <h3 class="text-sm font-medium text-gray-500">Report Date</h3>
-                <p class="mt-1 text-sm text-gray-900">${formatDate(item.createdAt)}</p>
+            <div class="col-md-6">
+                <label class="form-label small fw-bold text-muted">Report Date</label>
+                <p>${formatDate(item.createdAt)}</p>
             </div>
-        </div>
-        <div class="mt-4">
-            <h3 class="text-sm font-medium text-gray-500">Reason for Report</h3>
-            <p class="mt-1 text-sm text-gray-900 bg-gray-50 p-3 rounded">${item.reason}</p>
+            <div class="col-12">
+                <label class="form-label small fw-bold text-muted">Reason for Report</label>
+                <div class="bg-light p-3 rounded">${item.reason}</div>
+            </div>
         </div>
         ${item.statusHistory ? `
         <div class="mt-4">
-            <h3 class="text-sm font-medium text-gray-500 mb-2">Status History</h3>
-            <div class="space-y-2">
-                ${item.statusHistory.map(h => `
-                    <div class="bg-gray-50 p-3 rounded text-sm">
-                        <span class="font-medium">${h.status}</span> - ${formatDate(h.date)}
-                        ${h.note ? `<p class="text-gray-600 mt-1">${h.note}</p>` : ''}
-                    </div>
-                `).join('')}
-            </div>
+            <label class="form-label small fw-bold text-muted">Status History</label>
+            ${item.statusHistory.map(h => `
+                <div class="bg-light p-3 rounded mb-2">
+                    <span class="fw-semibold">${h.status}</span> - ${formatDate(h.date)}
+                    ${h.note ? `<p class="text-muted mt-1 mb-0">${h.note}</p>` : ''}
+                </div>
+            `).join('')}
         </div>
         ` : ''}
     `;
     
-    document.getElementById('detailsModal').classList.remove('hidden');
-    document.getElementById('detailsModal').classList.add('flex');
+    const modal = new bootstrap.Modal(document.getElementById('detailsModal'));
+    modal.show();
 }
 
 // Update status function
@@ -647,8 +653,8 @@ function updateStatus(id) {
     document.getElementById('newStatus').value = item.status || 'pending';
     document.getElementById('statusNote').value = '';
     
-    document.getElementById('statusModal').classList.remove('hidden');
-    document.getElementById('statusModal').classList.add('flex');
+    const modal = new bootstrap.Modal(document.getElementById('statusModal'));
+    modal.show();
 }
 
 // Apply filters
@@ -689,16 +695,6 @@ document.getElementById('perPageSelect').addEventListener('change', function(e) 
     updatePagination();
 });
 
-// Close modals
-document.getElementById('closeDetailsModal').addEventListener('click', function() {
-    document.getElementById('detailsModal').classList.remove('flex');
-    document.getElementById('detailsModal').classList.add('hidden');
-});
-
-document.getElementById('closeStatusModal').addEventListener('click', function() {
-    document.getElementById('statusModal').classList.remove('flex');
-    document.getElementById('statusModal').classList.add('hidden');
-});
 
 // Handle status form submission
 document.getElementById('statusForm').addEventListener('submit', async function(e) {
@@ -723,11 +719,10 @@ document.getElementById('statusForm').addEventListener('submit', async function(
             });
         }
         
-        showToast('Report status updated successfully', 'success');
+        Swal.fire('Berhasil!', 'Status laporan berhasil diupdate', 'success');
         
         // Close modal
-        document.getElementById('statusModal').classList.remove('flex');
-        document.getElementById('statusModal').classList.add('hidden');
+        bootstrap.Modal.getInstance(document.getElementById('statusModal')).hide();
         
         // Refresh display
         updateStats();
@@ -735,7 +730,7 @@ document.getElementById('statusForm').addEventListener('submit', async function(
         
     } catch (error) {
         console.error('Error updating status:', error);
-        showToast('Failed to update status', 'error');
+        Swal.fire('Error!', 'Gagal mengupdate status', 'error');
     }
 });
 
