@@ -8,7 +8,7 @@ use App\Http\Controllers\UserPostController;
 use App\Http\Controllers\TellinkProxyController;
 use App\Http\Middleware\TellinkAuth;
 
-Route::get('/', function () { return view('welcome'); });
+Route::redirect('/', '/login');
 
 // Authentication
 Route::get('/login', [AuthController::class, 'showLoginForm']);
