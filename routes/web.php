@@ -23,6 +23,7 @@ Route::middleware([TellinkAuth::class])->group(function () {
     Route::get('/profile', [UserController::class, 'profile']); // Current user profile
     Route::get('/user/{id}', [UserController::class, 'show']); // View other user profile
     Route::post('/profile/update', [UserController::class, 'updateProfile']);
+    Route::post('/profile/change-password', [UserController::class, 'changePassword']);
     Route::post('/profile/upload-avatar', [UserController::class, 'uploadAvatar']);
     Route::delete('/user/{id}', [UserController::class, 'destroy']);
     

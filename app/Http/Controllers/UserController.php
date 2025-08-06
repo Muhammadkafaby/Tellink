@@ -35,12 +35,12 @@ class UserController extends Controller
         $request->validate([
             'name' => 'nullable|string|max:255',
             'email' => 'nullable|email|max:255|unique:users,email,'.$user->id,
-            'password' => 'required|string'
+            'current_password' => 'required|string'
         ]);
         
-        // Verify password
-        if (!Hash::check($request->password, $user->password)) {
-            return redirect()->back()->withErrors(['password' => 'Password salah!'])->withInput();
+        // Verify current password
+        if (!Hash::check($request->current_password, $user->password)) {
+            return redirect()->back()->withErrors(['current_password' => 'Password salah!'])->withInput();
         }
         
         // Update data if password is correct
@@ -55,6 +55,27 @@ class UserController extends Controller
         $user->save();
         
         return redirect()->back()->with('success', 'Profile berhasil diupdate!');
+    }
+    
+    public function changePassword(Request $request)
+    {
+        $user = Auth::user();
+        
+        $request->validate([
+            'current_password' => 'required|string',
+            'new_password' => 'required|string|min:8|confirmed'
+        ]);
+        
+        // Verify current password
+        if (!Hash::check($request->current_password, $user->password)) {
+            return redirect()->back()->withErrors(['current_password' => 'Password lama salah!']);
+        }
+        
+        // Update password
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+        
+        return redirect()->back()->with('success', 'Password berhasil diubah!');
     }
     
     public function update(Request $request, $id)

@@ -45,32 +45,17 @@
                     <h3 class="fw-bold mb-1">{{ $user->name }}</h3>
                     <p class="text-muted mb-3">{{ $user->email }}</p>
                     
-                    <!-- Stats -->
-                    <div class="row g-3 text-center mb-4">
-                        <div class="col-4">
-                            <div class="p-2">
-                                <h5 class="fw-bold mb-0 text-danger">{{ $user->posts_count ?? 0 }}</h5>
-                                <small class="text-muted">Posts</small>
-                            </div>
-                        </div>
-                        <div class="col-4">
-                            <div class="p-2">
-                                <h5 class="fw-bold mb-0 text-info">{{ $user->likes_count ?? 0 }}</h5>
-                                <small class="text-muted">Likes</small>
-                            </div>
-                        </div>
-                        <div class="col-4">
-                            <div class="p-2">
-                                <h5 class="fw-bold mb-0 text-success">{{ $user->reports_count ?? 0 }}</h5>
-                                <small class="text-muted">Reports</small>
-                            </div>
-                        </div>
+                    <!-- Admin Info -->
+                    <div class="mb-4">
+                        <span class="badge bg-danger px-3 py-2">
+                            <i class="fas fa-user-shield me-2"></i>Administrator
+                        </span>
                     </div>
                     
-                    <!-- Quick Actions -->
-                    <div class="d-grid gap-2">
-                        <button class="btn btn-outline-danger btn-sm" onclick="viewActivity()">
-                            <i class="fas fa-chart-line me-2"></i>View Activity
+                    <!-- System Info Button -->
+                    <div class="d-grid">
+                        <button class="btn btn-outline-secondary btn-sm" onclick="viewSystemInfo()">
+                            <i class="fas fa-info-circle me-2"></i>System Information
                         </button>
                     </div>
                 </div>
@@ -125,30 +110,21 @@
                             
                             <div class="col-12">
                                 <hr class="my-4">
-                                <p class="text-muted mb-3"><i class="fas fa-lock me-2"></i>Verifikasi password untuk menyimpan perubahan</p>
+                                <p class="text-muted mb-3"><i class="fas fa-lock me-2"></i>Masukkan password untuk verifikasi</p>
                             </div>
                             
                             <div class="col-md-6">
-                                <label class="form-label small fw-bold text-muted text-uppercase">Password <span class="text-danger">*</span></label>
+                                <label class="form-label small fw-bold text-muted text-uppercase">Password Saat Ini <span class="text-danger">*</span></label>
                                 <div class="input-group">
-                                    <input name="password" id="passwordInput" type="password" 
+                                    <input name="current_password" type="password" 
                                            class="form-control form-control-lg" required>
-                                    <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('passwordInput')">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="togglePassword(this)">
                                         <i class="fas fa-eye"></i>
                                     </button>
                                 </div>
-                            </div>
-                            
-                            <div class="col-md-6">
-                                <label class="form-label small fw-bold text-muted text-uppercase">Konfirmasi Password <span class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <input id="confirmInput" type="password" 
-                                           class="form-control form-control-lg" required>
-                                    <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('confirmInput')">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                </div>
-                                <div id="errorMsg" class="invalid-feedback d-none">Password tidak cocok!</div>
+                                @error('current_password')
+                                    <div class="text-danger small mt-1">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
                         
@@ -156,7 +132,7 @@
                             <button type="button" class="btn btn-light px-4 me-2" onclick="resetForm()">
                                 <i class="fas fa-undo me-2"></i>Reset
                             </button>
-                            <button id="saveBtn" type="submit" class="btn btn-danger px-4" disabled>
+                            <button type="submit" class="btn btn-danger px-4">
                                 <i class="fas fa-save me-2"></i>Simpan Perubahan
                             </button>
                         </div>
@@ -164,45 +140,21 @@
                 </div>
             </div>
             
-            <!-- Security Settings -->
+            <!-- Admin Settings -->
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-white border-0 py-3">
-                    <h5 class="mb-0 fw-bold"><i class="fas fa-shield-alt me-2 text-success"></i>Keamanan Akun</h5>
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-cogs me-2 text-primary"></i>Admin Settings</h5>
                 </div>
                 <div class="card-body">
                     <div class="row g-3">
                         <div class="col-12">
                             <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded">
                                 <div>
-                                    <h6 class="mb-1">Ubah Password</h6>
-                                    <small class="text-muted">Perbarui password akun Anda secara berkala</small>
+                                    <h6 class="mb-1">Ubah Password Admin</h6>
+                                    <small class="text-muted">Ganti password administrator</small>
                                 </div>
                                 <button class="btn btn-sm btn-outline-danger" onclick="showChangePasswordModal()">
                                     <i class="fas fa-key me-2"></i>Ubah
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="col-12">
-                            <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded">
-                                <div>
-                                    <h6 class="mb-1">Two-Factor Authentication</h6>
-                                    <small class="text-muted">Tambahkan lapisan keamanan ekstra</small>
-                                </div>
-                                <button class="btn btn-sm btn-outline-success" onclick="enable2FA()">
-                                    <i class="fas fa-mobile-alt me-2"></i>Aktifkan
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="col-12">
-                            <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded">
-                                <div>
-                                    <h6 class="mb-1">Login History</h6>
-                                    <small class="text-muted">Lihat riwayat login akun Anda</small>
-                                </div>
-                                <button class="btn btn-sm btn-outline-info" onclick="viewLoginHistory()">
-                                    <i class="fas fa-history me-2"></i>Lihat
                                 </button>
                             </div>
                         </div>
@@ -249,40 +201,16 @@
 </style>
 
 <script>
-// Password validation
-const passwordInput = document.getElementById('passwordInput');
-const confirmInput = document.getElementById('confirmInput');
-const errorMsg = document.getElementById('errorMsg');
-const saveBtn = document.getElementById('saveBtn');
-
-function validatePasswords() {
-    const pw = passwordInput.value;
-    const cpw = confirmInput.value;
-    const match = pw && cpw && pw === cpw;
-    
-    if (pw && cpw) {
-        if (match) {
-            errorMsg.classList.add('d-none');
-            confirmInput.classList.remove('is-invalid');
-            confirmInput.classList.add('is-valid');
-        } else {
-            errorMsg.classList.remove('d-none');
-            errorMsg.classList.add('d-block');
-            confirmInput.classList.add('is-invalid');
-            confirmInput.classList.remove('is-valid');
-        }
-    }
-    
-    saveBtn.disabled = !match;
+// Form elements - check if they exist before using them
+const editForm = document.getElementById('editForm');
+if (editForm) {
+    // No longer need password confirmation for profile update
 }
 
-passwordInput.addEventListener('input', validatePasswords);
-confirmInput.addEventListener('input', validatePasswords);
-
 // Toggle password visibility
-function togglePassword(inputId) {
-    const input = document.getElementById(inputId);
-    const icon = event.currentTarget.querySelector('i');
+function togglePassword(button) {
+    const input = button.parentElement.querySelector('input[type="password"], input[type="text"]');
+    const icon = button.querySelector('i');
     
     if (input.type === 'password') {
         input.type = 'text';
@@ -335,130 +263,92 @@ function previewAndUploadAvatar(input) {
 // Reset form
 function resetForm() {
     document.getElementById('editForm').reset();
-    validatePasswords();
 }
 
-// View activity
-function viewActivity() {
+// View system info
+function viewSystemInfo() {
     Swal.fire({
-        title: 'Activity History',
+        title: 'System Information',
         html: `
             <div class="text-start">
                 <div class="mb-3 p-3 bg-light rounded">
-                    <small class="text-muted">Today</small>
-                    <p class="mb-0 mt-1">Login at 09:00 AM</p>
+                    <small class="text-muted fw-bold">Laravel Version</small>
+                    <p class="mb-0 mt-1">Laravel 11.x</p>
                 </div>
                 <div class="mb-3 p-3 bg-light rounded">
-                    <small class="text-muted">Yesterday</small>
-                    <p class="mb-0 mt-1">Posted new project</p>
+                    <small class="text-muted fw-bold">PHP Version</small>
+                    <p class="mb-0 mt-1">PHP 8.2</p>
+                </div>
+                <div class="mb-3 p-3 bg-light rounded">
+                    <small class="text-muted fw-bold">Database</small>
+                    <p class="mb-0 mt-1">MySQL 8.0</p>
                 </div>
                 <div class="p-3 bg-light rounded">
-                    <small class="text-muted">2 days ago</small>
-                    <p class="mb-0 mt-1">Updated profile</p>
+                    <small class="text-muted fw-bold">Server</small>
+                    <p class="mb-0 mt-1">Apache/Nginx</p>
                 </div>
             </div>
         `,
         showCloseButton: true,
-        showConfirmButton: false
+        showConfirmButton: false,
+        width: '500px'
     });
 }
 
 // Change password modal
 function showChangePasswordModal() {
     Swal.fire({
-        title: 'Change Password',
+        title: 'Ubah Password',
         html: `
-            <form id="changePasswordForm">
+            <form id="changePasswordForm" action="{{ url('/profile/change-password') }}" method="POST">
+                @csrf
                 <div class="mb-3 text-start">
-                    <label class="form-label">Current Password</label>
-                    <input type="password" class="form-control" id="currentPassword" required>
+                    <label class="form-label">Password Lama</label>
+                    <input type="password" class="form-control" name="current_password" id="currentPassword" required>
                 </div>
                 <div class="mb-3 text-start">
-                    <label class="form-label">New Password</label>
-                    <input type="password" class="form-control" id="newPassword" required>
+                    <label class="form-label">Password Baru (min 8 karakter)</label>
+                    <input type="password" class="form-control" name="new_password" id="newPassword" required>
                 </div>
                 <div class="mb-3 text-start">
-                    <label class="form-label">Confirm New Password</label>
-                    <input type="password" class="form-control" id="confirmNewPassword" required>
+                    <label class="form-label">Konfirmasi Password Baru</label>
+                    <input type="password" class="form-control" name="new_password_confirmation" id="confirmNewPassword" required>
                 </div>
             </form>
         `,
         showCancelButton: true,
-        confirmButtonText: 'Change Password',
+        confirmButtonText: 'Ubah Password',
         confirmButtonColor: '#dc3545',
+        cancelButtonText: 'Batal',
         preConfirm: () => {
             const current = document.getElementById('currentPassword').value;
             const newPass = document.getElementById('newPassword').value;
             const confirm = document.getElementById('confirmNewPassword').value;
             
+            if (!current) {
+                Swal.showValidationMessage('Password lama harus diisi');
+                return false;
+            }
+            
             if (newPass !== confirm) {
-                Swal.showValidationMessage('Passwords do not match');
+                Swal.showValidationMessage('Password baru tidak cocok');
                 return false;
             }
             
             if (newPass.length < 8) {
-                Swal.showValidationMessage('Password must be at least 8 characters');
+                Swal.showValidationMessage('Password minimal 8 karakter');
                 return false;
             }
             
-            return { current, newPass };
+            return true;
         }
     }).then((result) => {
         if (result.isConfirmed) {
-            Swal.fire('Success!', 'Password changed successfully', 'success');
+            // Submit the form
+            document.getElementById('changePasswordForm').submit();
         }
     });
 }
 
-// Enable 2FA
-function enable2FA() {
-    Swal.fire({
-        title: 'Enable Two-Factor Authentication',
-        text: 'This will add an extra layer of security to your account',
-        icon: 'info',
-        showCancelButton: true,
-        confirmButtonText: 'Enable',
-        confirmButtonColor: '#28a745'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            Swal.fire('Enabled!', '2FA has been enabled for your account', 'success');
-        }
-    });
-}
-
-// View login history
-function viewLoginHistory() {
-    Swal.fire({
-        title: 'Login History',
-        html: `
-            <div class="text-start" style="max-height: 300px; overflow-y: auto;">
-                <div class="mb-2 p-2 border-bottom">
-                    <div class="d-flex justify-content-between">
-                        <small class="fw-bold">Windows - Chrome</small>
-                        <small class="text-muted">Today, 09:00 AM</small>
-                    </div>
-                    <small class="text-muted">IP: 192.168.1.1</small>
-                </div>
-                <div class="mb-2 p-2 border-bottom">
-                    <div class="d-flex justify-content-between">
-                        <small class="fw-bold">Android - App</small>
-                        <small class="text-muted">Yesterday, 02:30 PM</small>
-                    </div>
-                    <small class="text-muted">IP: 192.168.1.2</small>
-                </div>
-                <div class="p-2">
-                    <div class="d-flex justify-content-between">
-                        <small class="fw-bold">iOS - Safari</small>
-                        <small class="text-muted">3 days ago</small>
-                    </div>
-                    <small class="text-muted">IP: 192.168.1.3</small>
-                </div>
-            </div>
-        `,
-        showCloseButton: true,
-        showConfirmButton: false,
-        width: '600px'
-    });
-}
 </script>
 @endsection
