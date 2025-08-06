@@ -180,4 +180,28 @@ class TellinkProxyController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+    
+    public function getReports()
+    {
+        try {
+            // Use the external reports API
+            $response = Http::timeout(30)->get('https://tellink-backend-2-b916417fa9aa.herokuapp.com/api/reports');
+            
+            \Log::info('Reports API Response Status: ' . $response->status());
+            
+            if ($response->successful()) {
+                return response()->json($response->json());
+            }
+            
+            \Log::error('Failed to fetch reports', [
+                'status' => $response->status(),
+                'body' => substr($response->body(), 0, 500)
+            ]);
+            
+            return response()->json(['error' => 'Failed to fetch reports'], 500);
+        } catch (\Exception $e) {
+            \Log::error('Error fetching reports: ' . $e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
 }

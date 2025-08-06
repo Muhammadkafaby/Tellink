@@ -44,6 +44,7 @@ Route::middleware([TellinkAuth::class])->group(function () {
         Route::post('/messages', [TellinkProxyController::class, 'createMessage']);
         Route::put('/messages/{id}', [TellinkProxyController::class, 'updateMessage']);
         Route::delete('/messages/{id}', [TellinkProxyController::class, 'deleteMessage']);
+        Route::get('/reports', [TellinkProxyController::class, 'getReports']);
     });
 });
   
