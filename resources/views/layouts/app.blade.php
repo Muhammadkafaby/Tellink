@@ -122,11 +122,6 @@
                                     <i class="fas fa-user-circle me-2"></i> Profile
                                 </a>
                             </li>
-                            <li>
-                                <a class="dropdown-item" href="{{ url('/settings') }}">
-                                    <i class="fas fa-cog me-2"></i> Settings
-                                </a>
-                            </li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <a class="dropdown-item text-danger" href="{{ url('/logout') }}">
