@@ -1,231 +1,395 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-    <style>
-        /* Additional custom styles */
-        .table-container {
-            overflow-x: auto;
-            margin: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        .table-row:hover {
-            background-color: #f8f9fa;
-            transition: background-color 0.2s ease;
-        }
-        
-        .header-cell {
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-    </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-</head>
-<body>
-    <x-layout>
-        <div class="bg-white p-6 rounded-lg shadow h-full flex flex-col">
-            {{-- section 1  --}}
-            <div class="flex items-center justify-between px-9 py-2">
-                <!-- Tampilkan data -->
-                <form method="GET" class="flex items-center gap-2">
-                    <label for="pagination">Tampilkan</label>
-                    <input id="pagination" type="number" max="8" name="perPage" value="8" class="w-16 border border-gray-300 rounded px-2 py-1" />
-                    <span>data</span>
-                    <button type="submit" class="px-2 py-1 bg-red-500 hover:bg-red-400 text-white rounded">Terapkan</button>
-                  </form>
-              
-                <!-- Search -->
-                <div class="flex items-center gap-2">
-                    <div class="border-gray-300 border-2 rounded">
-                        <input type="text" placeholder="Search here..." class="w-64 focus:border-none outline-0 px-3 py-1 text-sm " />
-                        <i class="fas fa-search text-gray-500 px-1"></i>
-                    </div>
-                    <button type="button" class="bg-red-500 text-white p-1 px-2 rounded-lg font-semibold">
-                        Buat baru
-                    </button>
-                </div>
-            </div>
-            {{-- <!-- Section 2 --> --}}
-            <div class="container w-full px-4 py-0">
-                <div class="table-container">
-                  <table class="min-w-full border-2 border-gray-200 rounded-lg overflow-hidden">
-                    <thead>
-                      <tr class="bg-red-500 text-white">
-                        <th class="border-2 py-2 px-4 w-[5%] header-cell">ID</th>
-                        <th class="border-2 py-2 px-4 w-[20%] header-cell">Nama</th>
-                        <th class="border-2 py-2 px-4 w-[10%] header-cell">NIM</th>
-                        <th class="border-2 py-2 px-4 w-[20%] header-cell">Jurusan</th>
-                        <th class="border-2 py-2 px-4 w-[15%] header-cell">Password</th>
-                        <th class="border-2 py-2 px-4 w-[10%] header-cell">Post</th>
-                        <th class="border-2 py-2 px-4 w-[10%] header-cell">Total Post</th>
-                        <th class="border-2 py-2 px-4 w-[10%] header-cell">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody id="users-container">
-                      {{-- Data akan diisi oleh JavaScript --}}
-                    </tbody>
-                  </table>
-                </div>
-            </div>
+@extends('layouts.app')
+
+@section('content')
+<div class="container mt-4">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Data Mahasiswa</h2>
+    <button onclick="showCreateModal()" class="btn btn-success">
+      <i class="fas fa-plus"></i> Tambah Mahasiswa
+    </button>
+  </div>
+  
+  <!-- Search Bar -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="input-group">
+            <input type="text" id="search-nama" class="form-control" placeholder="Cari berdasarkan nama...">
+            <button class="btn btn-primary" onclick="searchUser()">
+              <i class="fas fa-search"></i> Cari
+            </button>
+          </div>
         </div>
-    </x-layout>
-
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-          fetchUsers();
-        });
-
-        async function fetchUsers() {
-          try {
-            const response = await axios.get('/api/tellink/users');
-            // Response Tellink API: { success: true, data: [...] }
-            let users = [];
-            if (Array.isArray(response.data)) {
-                users = response.data;
-            } else if (response.data && Array.isArray(response.data.data)) {
-                users = response.data.data;
-            } else if(response.data && response.data.success && Array.isArray(response.data.data)) {
-                users = response.data.data;
-            }
-            const usersContainer = document.getElementById('users-container');
-            usersContainer.innerHTML = '';
-
-            users.forEach(user =e {
-              const row = document.createElement('tr');
-              row.classList.add('table-row', 'even:bg-gray-50');
-
-              row.innerHTML = `
-                <td class="border-2 py-2 px-4 text-center">${user.id}</td>
-                <td class="border-2 py-2 px-4">${user.name || user.nama}</td>
-                <td class="border-2 py-2 px-4">${user.nim || 'NIM' + user.id}</td>
-                <td class="border-2 py-2 px-4">Jurusan</td>
-                <td class="border-2 py-2 px-4 font-mono">••••••••</td>
-                <td class="border-2 py-2 px-4 text-center">0</td>
-                <td class="border-2 py-2 px-4 text-center">0</td>
-                <td class="border-2 py-2 px-4 text-center">
-                  <div class="flex gap-2 w-full text-white">
-                    <button class="edit-btn w-[50%] rounded py-1 bg-[#259ee0] hover:bg-[#2eb6ff]" data-id="${user.id}">
-                      <i class="fa-solid fa-pencil"></i>
-                    </button>
-                    <button class="dlt-btn w-[50%] rounded py-1 bg-red-600 hover:bg-red-500" data-id="${user.id}">
-                      <i class="fa-solid fa-trash"></i>
-                    </button>
-                  </div>
-                </td>
-              `;
-
-              usersContainer.appendChild(row);
-            });
-
-            // Re-attach event listeners after adding rows
-            attachEventListeners();
-          } catch (error) {
-            console.error('Error fetching users:', error);
-          }
-        }
-
-        function attachEventListeners() {
-            // Edit buttons
-            document.querySelectorAll('.edit-btn').forEach(btn => {
-                btn.addEventListener('click', function () {
-                    const row = this.closest('tr');
-                    const cells = row.querySelectorAll('td');
-                    document.getElementById('edit-nama').value = cells[1].innerText;
-                    document.getElementById('edit-nim').value = cells[2].innerText;
-                    document.getElementById('edit-jurusan').value = cells[3].innerText;
-
-                    document.getElementById('editModal').classList.remove('hidden');
-                    document.getElementById('editModal').classList.add('flex');
-                });
-            });
-
-            // Delete buttons
-            document.querySelectorAll('.dlt-btn').forEach(btn => {
-                btn.addEventListener('click', function () {
-                    document.getElementById('deleteModal').classList.remove('hidden');
-                    document.getElementById('deleteModal').classList.add('flex');
-                });
-            });
-        }
-      </script>
-
-    <!-- edit modal -->
-    <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center z-50">
-        <div class="bg-white w-[90%] max-w-md rounded-lg p-6 shadow-lg">
-            <h2 class="text-xl font-bold mb-4">Edit Data</h2>
-            <form id="editForm">
-                <input type="hidden" id="edit-id" />
-    
-                <div class="mb-2">
-                    <label for="edit-nama" class="block text-sm">Nama</label>
-                    <input type="text" id="edit-nama" class="w-full border px-3 py-1 rounded" />
-                </div>
-    
-                <div class="mb-2">
-                    <label for="edit-nim" class="block text-sm">NIM</label>
-                    <input type="text" id="edit-nim" class="w-full border px-3 py-1 rounded" />
-                </div>
-    
-                <div class="mb-2">
-                    <label for="edit-jurusan" class="block text-sm">Jurusan</label>
-                    <textarea id="edit-jurusan" class="w-full border px-3 py-1 rounded"></textarea>
-                </div>
-    
-                <div class="flex justify-end gap-2 mt-4">
-                    <button type="button" id="closeModal" class="px-3 py-1 bg-gray-300 rounded">Cancel</button>
-                    <button type="submit" class="px-3 py-1 bg-blue-500 text-white rounded">Save</button>
-                </div>
-            </form>
+        <div class="col-md-6 text-end">
+          <span class="text-muted">Total: <strong id="total-users">0</strong> mahasiswa</span>
         </div>
+      </div>
     </div>
+  </div>
 
-    <!-- delete modal -->
-    <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center z-50">
-        <div class="bg-white w-[90%] max-w-md rounded-lg p-2 shadow-lg mx-4">
-            <h2 class="text-xl font-bold mb-2">Hapus Data</h2>
-            <div class="p-4">
-                <p class="mb-4">Apakah anda yakin ingin menghapus data ini?</p>
-                <div class="flex justify-end gap-2 mt-4">
-                    <button type="button" id="closeDeleteModal" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 transition">Cancel</button>
-                    <button type="button" id="confirmDelete" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition">Delete</button>
+  <!-- Table -->
+  <div class="card">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead class="table-danger">
+            <tr>
+              <th scope="col" width="5%">ID</th>
+              <th scope="col" width="20%">NAMA</th>
+              <th scope="col" width="15%">NIM</th>
+              <th scope="col" width="25%">EMAIL</th>
+              <th scope="col" width="15%">JURUSAN</th>
+              <th scope="col" width="10%">PASSWORD</th>
+              <th scope="col" width="10%" class="text-center">ACTION</th>
+            </tr>
+          </thead>
+          <tbody id="user-table-body">
+            <tr>
+              <td colspan="7" class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
                 </div>
-            </div>
-        </div>
+                <div class="mt-2">Loading data...</div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
+  </div>
 
-    <script>
-        // Close edit modal
-        document.getElementById('closeModal').addEventListener('click', function () {
-            document.getElementById('editModal').classList.remove('flex');
-            document.getElementById('editModal').classList.add('hidden');
-        });
+  <!-- Modal Form -->
+  <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modal-title">Tambah Mahasiswa</h5>
+          <button type="button" class="btn-close" onclick="closeModal()" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="edit-nim">
+          
+          <div class="mb-3">
+            <label for="form-nim" class="form-label">NIM <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="form-nim" placeholder="Masukkan NIM">
+          </div>
+          
+          <div class="mb-3">
+            <label for="form-nama" class="form-label">Nama Lengkap <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="form-nama" placeholder="Masukkan nama lengkap">
+          </div>
+          
+          <div class="mb-3">
+            <label for="form-email" class="form-label">Email <span class="text-danger">*</span></label>
+            <input type="email" class="form-control" id="form-email" placeholder="Masukkan email">
+          </div>
+          
+          <div class="mb-3">
+            <label for="form-password" class="form-label">Password <span class="text-danger" id="password-required">*</span></label>
+            <input type="password" class="form-control" id="form-password" placeholder="Masukkan password">
+            <small class="text-muted">Kosongkan jika tidak ingin mengubah password (untuk edit)</small>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal()">Batal</button>
+          <button type="button" class="btn btn-primary" onclick="submitForm()">Simpan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-        // Close delete modal
-        document.getElementById('closeDeleteModal').addEventListener('click', function () {
-            document.getElementById('deleteModal').classList.remove('flex');
-            document.getElementById('deleteModal').classList.add('hidden');
-        });
+<!-- Add Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<!-- Add SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-        // Form submission
-        document.getElementById('editForm').addEventListener('submit', function (e) {
-            e.preventDefault();
-            alert('Form submitted!'); // panggil logic edit disini
-            document.getElementById('editModal').classList.add('hidden');
-        });
+<style>
+/* Custom Avatar Styles */
+.avatar-sm {
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+}
 
-        // Confirm delete
-        document.getElementById('confirmDelete').addEventListener('click', function () {
-            alert('Data deleted!'); // panggil logic delete disini
-            document.getElementById('deleteModal').classList.add('hidden');
-        });
-    </script>
-</body>
-</html>
+.avatar-title {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 16px;
+}
 
+.bg-soft-primary {
+  background-color: rgba(13, 110, 253, 0.1);
+}
+
+/* Table Hover Effect */
+.table-hover tbody tr:hover {
+  background-color: rgba(0,0,0,.02);
+  cursor: pointer;
+}
+
+/* Search input on focus */
+#search-nama:focus {
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Card hover effect */
+.card {
+  transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+/* Button group styling */
+.btn-group-sm .btn {
+  padding: 0.25rem 0.5rem;
+}
+
+/* Modal styling */
+.modal-content {
+  border: none;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+/* Badge styling */
+.badge {
+  font-weight: 500;
+  padding: 0.35em 0.65em;
+}
+</style>
+
+<script>
+let allUsers = [];
+
+// Load users on page load
+async function loadUsers() {
+  try {
+    // Use Laravel proxy route to avoid CORS
+    const response = await fetch('/api/tellink/users');
+    if (!response.ok) throw new Error('Network response was not ok');
+    
+    const resData = await response.json();
+    console.log('API Response:', resData); // Debug log
+    
+    // Handle different response formats
+    if (resData.data && Array.isArray(resData.data)) {
+      allUsers = resData.data;
+    } else if (Array.isArray(resData)) {
+      allUsers = resData;
+    } else {
+      allUsers = [];
+    }
+    
+    renderTable(allUsers);
+  } catch (err) {
+    console.error('Error loading users:', err);
+    document.getElementById("user-table-body").innerHTML = 
+      '<tr><td colspan="7" style="text-align:center; color:red;">Error memuat data! Check console for details.</td></tr>';
+  }
+}
+
+// Render table with user data
+function renderTable(users) {
+  let html = '';
+  
+  if (!users || !users.length) {
+    html = `<tr>
+      <td colspan="7" class="text-center py-4">
+        <i class="fas fa-inbox fa-3x text-muted"></i>
+        <p class="mt-2 text-muted">Data mahasiswa kosong</p>
+      </td>
+    </tr>`;
+  } else {
+    users.forEach((user, index) => {
+      html += `<tr>
+        <td>${user.id || index + 1}</td>
+        <td>
+          <div class="d-flex align-items-center">
+            <div class="avatar-sm me-2">
+              <div class="avatar-title bg-soft-primary text-primary rounded-circle">
+                ${(user.nama || user.name || 'U').charAt(0).toUpperCase()}
+              </div>
+            </div>
+            <div>
+              <h6 class="mb-0">${user.nama || user.name || '-'}</h6>
+            </div>
+          </div>
+        </td>
+        <td><span class="badge bg-secondary">${user.nim || '-'}</span></td>
+        <td>${user.email || '-'}</td>
+        <td>${user.jurusan || 'D3 Rekayasa Perangkat Lunak'}</td>
+        <td><span class="text-muted">••••••••</span></td>
+        <td class="text-center">
+          <div class="btn-group btn-group-sm" role="group">
+            <button onclick="showEditModal('${user.nim}')" class="btn btn-warning" title="Edit">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button onclick="deleteUser('${user.nim}')" class="btn btn-danger" title="Hapus">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </td>
+      </tr>`;
+    });
+  }
+  
+  document.getElementById("user-table-body").innerHTML = html;
+  document.getElementById("total-users").innerText = users.length;
+}
+
+// Search functionality
+function searchUser() {
+  const query = document.getElementById('search-nama').value.toLowerCase();
+  const filtered = allUsers.filter(u => 
+    (u.nama && u.nama.toLowerCase().includes(query)) || 
+    (u.name && u.name.toLowerCase().includes(query)) ||
+    (u.nim && u.nim.toLowerCase().includes(query)) ||
+    (u.email && u.email.toLowerCase().includes(query))
+  );
+  renderTable(filtered);
+}
+
+// Enable search on Enter key
+document.getElementById('search-nama').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') {
+    searchUser();
+  }
+});
+
+// Show create modal
+function showCreateModal() {
+  document.getElementById('modal-title').innerText = 'Tambah Mahasiswa Baru';
+  document.getElementById('edit-nim').value = '';
+  document.getElementById('form-nim').value = '';
+  document.getElementById('form-nama').value = '';
+  document.getElementById('form-email').value = '';
+  document.getElementById('form-password').value = '';
+  document.getElementById('password-required').style.display = 'inline';
+  
+  // Show modal using Bootstrap
+  const modal = new bootstrap.Modal(document.getElementById('userModal'));
+  modal.show();
+}
+
+// Show edit modal
+function showEditModal(nim) {
+  const user = allUsers.find(u => u.nim === nim);
+  if (!user) {
+    Swal.fire('Error', 'User tidak ditemukan', 'error');
+    return;
+  }
+  
+  document.getElementById('modal-title').innerText = 'Edit Data Mahasiswa';
+  document.getElementById('edit-nim').value = nim;
+  document.getElementById('form-nim').value = user.nim;
+  document.getElementById('form-nama').value = user.nama || user.name || '';
+  document.getElementById('form-email').value = user.email || '';
+  document.getElementById('form-password').value = '';
+  document.getElementById('password-required').style.display = 'none';
+  
+  // Show modal using Bootstrap
+  const modal = new bootstrap.Modal(document.getElementById('userModal'));
+  modal.show();
+}
+
+// Close modal
+function closeModal() {
+  const modal = bootstrap.Modal.getInstance(document.getElementById('userModal'));
+  if (modal) {
+    modal.hide();
+  }
+}
+
+// Submit form (create or update)
+async function submitForm() {
+  const nim = document.getElementById('form-nim').value;
+  const nama = document.getElementById('form-nama').value;
+  const email = document.getElementById('form-email').value;
+  const password = document.getElementById('form-password').value;
+  const editNim = document.getElementById('edit-nim').value;
+  
+  if (!nim || !nama || !email) {
+    alert("NIM, Nama, dan Email wajib diisi!");
+    return;
+  }
+  
+  if (!editNim && !password) {
+    alert("Password wajib diisi untuk user baru!");
+    return;
+  }
+  
+  try {
+    let response;
+    
+    if (editNim) {
+      // Update existing user - for now just alert since API endpoint not available
+      alert("Fitur edit belum tersedia di API");
+      closeModal();
+      return;
+    } else {
+      // Create new user via Laravel proxy
+      response = await fetch('/api/tellink/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nim, nama, email, password })
+      });
+    }
+    
+    if (!response.ok) throw new Error('Request failed');
+    
+    alert(editNim ? "Update berhasil!" : "User baru berhasil ditambahkan!");
+    closeModal();
+    loadUsers();
+  } catch(e) {
+    console.error('Error saving data:', e);
+    alert('Gagal menyimpan data! Check console for details.');
+  }
+}
+
+// Delete user
+async function deleteUser(nim) {
+  const result = await Swal.fire({
+    title: 'Konfirmasi Hapus',
+    text: `Yakin ingin menghapus mahasiswa dengan NIM: ${nim}?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Ya, Hapus!',
+    cancelButtonText: 'Batal'
+  });
+  
+  if (!result.isConfirmed) return;
+  
+  try {
+    const response = await fetch('/api/tellink/delete-user', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nim })
+    });
+    
+    if (!response.ok) throw new Error('Delete failed');
+    
+    Swal.fire('Terhapus!', 'Data mahasiswa berhasil dihapus.', 'success');
+    loadUsers();
+  } catch(e) {
+    console.error('Error deleting user:', e);
+    Swal.fire('Error!', 'Gagal menghapus data. Silakan coba lagi.', 'error');
+  }
+}
+
+// Load data when page loads
+window.onload = function() {
+  console.log('Page loaded, fetching users...');
+  loadUsers();
+};
+</script>
+@endsection

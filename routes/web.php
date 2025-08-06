@@ -38,6 +38,8 @@ Route::middleware([TellinkAuth::class])->group(function () {
     // Tellink API Proxy routes
     Route::prefix('api/tellink')->group(function () {
         Route::get('/users', [TellinkProxyController::class, 'getUsers']);
+        Route::post('/register', [TellinkProxyController::class, 'registerUser']);
+        Route::post('/delete-user', [TellinkProxyController::class, 'deleteUser']);
         Route::get('/messages', [TellinkProxyController::class, 'getMessages']);
         Route::post('/messages', [TellinkProxyController::class, 'createMessage']);
         Route::put('/messages/{id}', [TellinkProxyController::class, 'updateMessage']);

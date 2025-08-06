@@ -10,7 +10,7 @@ return [
     |
     */
 
-    'api_base_url' => env('TELLINK_API_URL', 'https://tellink-backend-2.herokuapp.com'),
+    'api_base_url' => env('TELLINK_API_URL', 'https://tellink-backend-2-b916417fa9aa.herokuapp.com'),
     
     'api_timeout' => env('TELLINK_API_TIMEOUT', 30),
     

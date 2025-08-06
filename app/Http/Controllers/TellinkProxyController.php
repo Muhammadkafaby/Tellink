@@ -17,13 +17,44 @@ class TellinkProxyController extends Controller
     public function getUsers()
     {
         try {
-            $response = Http::get($this->apiBaseUrl . '/api/users');
+            // Get mahasiswa list from API
+            $response = Http::get($this->apiBaseUrl . '/api/mahasiswa');
             
             if ($response->successful()) {
                 return response()->json($response->json());
             }
             
             return response()->json(['error' => 'Failed to fetch users'], 500);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+    
+    public function registerUser(Request $request)
+    {
+        try {
+            $response = Http::post($this->apiBaseUrl . '/api/register', $request->all());
+            
+            if ($response->successful()) {
+                return response()->json($response->json());
+            }
+            
+            return response()->json(['error' => 'Failed to register user'], 500);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+    
+    public function deleteUser(Request $request)
+    {
+        try {
+            $response = Http::post($this->apiBaseUrl . '/api/deletemahasiswa', $request->all());
+            
+            if ($response->successful()) {
+                return response()->json($response->json());
+            }
+            
+            return response()->json(['error' => 'Failed to delete user'], 500);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
