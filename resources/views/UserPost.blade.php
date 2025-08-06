@@ -3,14 +3,9 @@
 @section('content')
 <div class="container-fluid px-4">
   <!-- Header -->
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-      <h2 class="h3 mb-1 text-gray-800 fw-bold">Project Posts</h2>
-      <p class="text-muted mb-0">Kelola postingan dan project mahasiswa</p>
-    </div>
-    <button onclick="showCreateModal()" class="btn btn-danger shadow-sm">
-      <i class="fas fa-plus-circle me-2"></i>Buat Postingan
-    </button>
+  <div class="mb-4">
+    <h2 class="h3 mb-1 text-gray-800 fw-bold">Project Posts</h2>
+    <p class="text-muted mb-0">Kelola postingan dan project mahasiswa</p>
   </div>
   
   <!-- Stats Cards -->
@@ -120,11 +115,6 @@
             <option value="50">50 data</option>
             <option value="100">100 data</option>
           </select>
-        </div>
-        <div class="col-md-1 text-end">
-          <button class="btn btn-outline-secondary" onclick="exportPosts()" title="Export Data">
-            <i class="fas fa-download me-2"></i>Export
-          </button>
         </div>
       </div>
     </div>
@@ -527,10 +517,7 @@ function renderTable() {
       <div class="col-12 text-center py-5">
         <i class="fas fa-inbox fa-5x text-muted mb-3"></i>
         <h4 class="text-muted">Belum ada postingan</h4>
-        <p class="text-muted">Mulai buat postingan pertama Anda!</p>
-        <button onclick="showCreateModal()" class="btn btn-danger mt-3">
-          <i class="fas fa-plus-circle me-2"></i>Buat Postingan
-        </button>
+        <p class="text-muted">Tidak ada postingan yang tersedia saat ini.</p>
       </div>
     `;
   } else {
