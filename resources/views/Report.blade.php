@@ -1,206 +1,252 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Reports Management - Tellink</title>
+@extends('layouts.app')
+
+@section('content')
+<div class="container-fluid px-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="h3 mb-1 text-gray-800 fw-bold">Project Reports</h2>
+            <p class="text-muted mb-0">Kelola dan review laporan project mahasiswa</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-secondary" onclick="refreshData()">
+                <i class="fas fa-sync-alt me-2"></i>Refresh
+            </button>
+            <button class="btn btn-danger shadow-sm" onclick="exportReports()">
+                <i class="fas fa-download me-2"></i>Export Reports
+            </button>
+        </div>
+    </div>
+
     <style>
-        /* Additional custom styles */
-        .table-container {
-            overflow-x: auto;
-            margin: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            border-radius: 0.5rem;
+        /* Modern UI Styles */
+        .stats-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: none;
+            border-radius: 15px;
         }
         
-        .table-row:hover {
-            background-color: #f8f9fa;
-            transition: background-color 0.2s ease;
-        }
-        
-        .header-cell {
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            font-size: 0.875rem;
-        }
-        
-        .loading-spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        .skeleton {
-            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-        }
-        
-        @keyframes loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-        
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 16px 24px;
-            background: #333;
-            color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            display: none;
-            z-index: 9999;
-        }
-        
-        .toast.success {
-            background: #10b981;
-        }
-        
-        .toast.error {
-            background: #ef4444;
-        }
-        
-        .toast.warning {
-            background: #f59e0b;
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
         }
         
         .status-badge {
-            padding: 4px 12px;
-            border-radius: 9999px;
+            padding: 0.35em 0.85em;
+            border-radius: 20px;
             font-size: 0.75rem;
             font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.5px;
         }
         
         .status-pending {
-            background-color: #fef3c7;
-            color: #92400e;
+            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+            color: white;
         }
         
         .status-resolved {
-            background-color: #d1fae5;
-            color: #065f46;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
         }
         
         .status-investigating {
-            background-color: #dbeafe;
-            color: #1e40af;
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+            color: white;
+        }
+        
+        .table-modern thead th {
+            border-bottom: 2px solid #dee2e6;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+            color: #6c757d;
+            padding: 1rem;
+        }
+        
+        .table-modern tbody tr {
+            transition: all 0.2s;
+            border-bottom: 1px solid #f1f3f5;
+        }
+        
+        .table-modern tbody tr:hover {
+            background-color: rgba(0,0,0,.02);
+            transform: scale(1.01);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .btn-action {
+            padding: 0.375rem 0.75rem;
+            border-radius: 5px;
+            transition: all 0.2s;
+            border: none;
+        }
+        
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .modal-modern .modal-content {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        .modal-modern .modal-header {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            border: none;
+            padding: 1.5rem;
+        }
+        
+        .pagination-modern .page-link {
+            border: none;
+            border-radius: 5px;
+            margin: 0 2px;
+            padding: 0.5rem 0.75rem;
+            color: #6c757d;
+            transition: all 0.2s;
+        }
+        
+        .pagination-modern .page-link:hover {
+            background-color: #dc3545;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .pagination-modern .page-item.active .page-link {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
         }
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-</head>
-<body>
-    <x-layout>
-        <div class="bg-white rounded-lg shadow-md">
-            <!-- Header Section -->
-            <div class="border-b border-gray-200 px-6 py-4">
-                <div class="flex items-center justify-between">
-                    <!-- Left: Title and count -->
-                    <div>
-                        <h2 class="text-2xl font-bold text-gray-800">Project Reports</h2>
-                        <p class="text-sm text-gray-600 mt-1">Manage and review reported projects</p>
-                    </div>
-
-                    <!-- Right: Search -->
-                    <div class="flex items-center gap-3">
-                        <div class="relative">
-                            <input type="text" id="searchInput" placeholder="Search by project ID, reporter NIM, or reason..." class="w-96 pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500" />
-                            <i class="fas fa-search text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2"></i>
+    <!-- Stats Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100 stats-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h6 class="text-uppercase text-muted mb-2 small fw-bold">Total Reports</h6>
+                            <h3 class="mb-0 fw-bold text-dark" id="totalReports">0</h3>
+                        </div>
+                        <div class="ms-3">
+                            <div class="bg-secondary bg-opacity-10 rounded-circle p-3">
+                                <i class="fas fa-flag text-secondary fa-lg"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Stats Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 p-6">
-                <div class="bg-gray-50 rounded-lg p-4">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-gray-600">Total Reports</p>
-                            <p class="text-2xl font-bold text-gray-900" id="totalReports">0</p>
+        </div>
+        
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100 stats-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h6 class="text-uppercase text-muted mb-2 small fw-bold">Pending</h6>
+                            <h3 class="mb-0 fw-bold text-warning" id="pendingReports">0</h3>
                         </div>
-                        <div class="bg-gray-200 rounded-full p-3">
-                            <i class="fas fa-flag text-gray-600"></i>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="bg-yellow-50 rounded-lg p-4">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-yellow-600">Pending</p>
-                            <p class="text-2xl font-bold text-yellow-900" id="pendingReports">0</p>
-                        </div>
-                        <div class="bg-yellow-200 rounded-full p-3">
-                            <i class="fas fa-clock text-yellow-600"></i>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="bg-blue-50 rounded-lg p-4">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-blue-600">Investigating</p>
-                            <p class="text-2xl font-bold text-blue-900" id="investigatingReports">0</p>
-                        </div>
-                        <div class="bg-blue-200 rounded-full p-3">
-                            <i class="fas fa-search text-blue-600"></i>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="bg-green-50 rounded-lg p-4">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-green-600">Resolved</p>
-                            <p class="text-2xl font-bold text-green-900" id="resolvedReports">0</p>
-                        </div>
-                        <div class="bg-green-200 rounded-full p-3">
-                            <i class="fas fa-check-circle text-green-600"></i>
+                        <div class="ms-3">
+                            <div class="bg-warning bg-opacity-10 rounded-circle p-3">
+                                <i class="fas fa-clock text-warning fa-lg"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Filter Section -->
-            <div class="px-6 pb-4">
-                <div class="flex items-center gap-4">
-                    <div class="flex items-center gap-2">
-                        <label for="statusFilter" class="text-sm text-gray-600">Status:</label>
-                        <select id="statusFilter" class="border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-red-500">
-                            <option value="">All Status</option>
-                            <option value="pending">Pending</option>
-                            <option value="investigating">Investigating</option>
-                            <option value="resolved">Resolved</option>
-                        </select>
-                    </div>
-                    
-                    <div class="flex items-center gap-2">
-                        <label for="perPageSelect" class="text-sm text-gray-600">Show:</label>
-                        <select id="perPageSelect" class="border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-red-500">
-                            <option value="10" selected>10</option>
-                            <option value="25">25</option>
-                            <option value="50">50</option>
-                            <option value="100">100</option>
-                        </select>
-                        <span class="text-sm text-gray-600">entries</span>
+        </div>
+        
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100 stats-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h6 class="text-uppercase text-muted mb-2 small fw-bold">Investigating</h6>
+                            <h3 class="mb-0 fw-bold text-info" id="investigatingReports">0</h3>
+                        </div>
+                        <div class="ms-3">
+                            <div class="bg-info bg-opacity-10 rounded-circle p-3">
+                                <i class="fas fa-search text-info fa-lg"></i>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100 stats-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h6 class="text-uppercase text-muted mb-2 small fw-bold">Resolved</h6>
+                            <h3 class="mb-0 fw-bold text-success" id="resolvedReports">0</h3>
+                        </div>
+                        <div class="ms-3">
+                            <div class="bg-success bg-opacity-10 rounded-circle p-3">
+                                <i class="fas fa-check-circle text-success fa-lg"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Search and Filter Bar -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <div class="row g-3 align-items-center">
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0">
+                            <i class="fas fa-search text-muted"></i>
+                        </span>
+                        <input type="text" id="searchInput" class="form-control border-start-0 ps-0" placeholder="Cari project ID, NIM, atau alasan..." onkeyup="applyFilters()">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <select id="statusFilter" class="form-select" onchange="applyFilters()">
+                        <option value="">Semua Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="investigating">Investigating</option>
+                        <option value="resolved">Resolved</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select id="perPageSelect" class="form-select" onchange="applyFilters()">
+                        <option value="10" selected>10 data</option>
+                        <option value="25">25 data</option>
+                        <option value="50">50 data</option>
+                        <option value="100">100 data</option>
+                    </select>
+                </div>
+                <div class="col-md-3 text-end">
+                    <div class="btn-group" role="group">
+                        <button class="btn btn-outline-secondary" onclick="toggleView()">
+                            <i class="fas fa-th-large me-2" id="viewIcon"></i>
+                            <span id="viewText">Grid View</span>
+                        </button>
+                        <button class="btn btn-outline-secondary" onclick="exportReports()">
+                            <i class="fas fa-download"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
             
             <!-- Table Section -->
             <div class="px-6 pb-6">
@@ -249,8 +295,6 @@
                     <div id="paginationControls" class="flex gap-2"></div>
                 </div>
             </div>
-        </div>
-    </x-layout>
 
     <!-- View Details Modal -->
     <div id="detailsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center z-[999]">
@@ -296,8 +340,7 @@
     <div id="toast" class="toast">
         <span id="toastMessage"></span>
     </div>
-
-</body>
+</div>
 
 <script>
 // Global variables
@@ -700,5 +743,4 @@ document.addEventListener('DOMContentLoaded', function() {
     fetchData();
 });
 </script>
-
-</html>
+@endsection
