@@ -180,11 +180,6 @@
             </div>
             
             <div class="col-md-6">
-              <label class="form-label small fw-bold text-muted text-uppercase">Email</label>
-              <p class="form-control-plaintext fs-5" id="view-email">-</p>
-            </div>
-            
-            <div class="col-md-6">
               <label class="form-label small fw-bold text-muted text-uppercase">Jurusan</label>
               <p class="form-control-plaintext fs-5" id="view-jurusan">-</p>
             </div>
@@ -196,9 +191,14 @@
               </p>
             </div>
             
-            <div class="col-md-6">
-              <label class="form-label small fw-bold text-muted text-uppercase">Terdaftar Sejak</label>
-              <p class="form-control-plaintext fs-5" id="view-date">-</p>
+            <div class="col-md-12">
+              <label class="form-label small fw-bold text-muted text-uppercase">Show Password</label>
+              <div class="input-group">
+                <input type="password" class="form-control" id="view-password" value="********" readonly>
+                <button class="btn btn-outline-secondary" type="button" onclick="toggleViewPassword()">
+                  <i class="fas fa-eye" id="view-password-icon"></i>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -676,7 +676,6 @@ function showViewModal(nim) {
   document.getElementById('modal-title').innerText = 'Detail Mahasiswa';
   document.getElementById('view-nim').innerText = user.nim || '-';
   document.getElementById('view-nama').innerText = user.nama || user.name || '-';
-  document.getElementById('view-email').innerText = user.email || '-';
   document.getElementById('view-jurusan').innerText = user.jurusan || 'D3 Rekayasa Perangkat Lunak';
   
   // Set status badge
@@ -686,18 +685,35 @@ function showViewModal(nim) {
     '<span class="badge badge-status inactive">Tidak Aktif</span>';
   document.getElementById('view-status').innerHTML = statusHtml;
   
-  // Set registration date (demo)
-  const date = new Date();
-  date.setDate(date.getDate() - Math.floor(Math.random() * 365));
-  document.getElementById('view-date').innerText = date.toLocaleDateString('id-ID', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric'
-  });
+  // Set password (masked by default)
+  document.getElementById('view-password').value = '********';
+  document.getElementById('view-password').type = 'password';
+  document.getElementById('view-password-icon').classList.remove('fa-eye-slash');
+  document.getElementById('view-password-icon').classList.add('fa-eye');
   
   // Show modal using Bootstrap
   const modal = new bootstrap.Modal(document.getElementById('viewModal'));
   modal.show();
+}
+
+// Toggle password visibility in view modal
+function toggleViewPassword() {
+  const passwordInput = document.getElementById('view-password');
+  const passwordIcon = document.getElementById('view-password-icon');
+  
+  if (passwordInput.type === 'password') {
+    // Show actual password (for demo purposes, using a placeholder)
+    passwordInput.type = 'text';
+    passwordInput.value = 'password123'; // In production, this would be fetched from backend
+    passwordIcon.classList.remove('fa-eye');
+    passwordIcon.classList.add('fa-eye-slash');
+  } else {
+    // Hide password
+    passwordInput.type = 'password';
+    passwordInput.value = '********';
+    passwordIcon.classList.remove('fa-eye-slash');
+    passwordIcon.classList.add('fa-eye');
+  }
 }
 
 // Delete user
