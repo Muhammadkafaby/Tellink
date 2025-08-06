@@ -59,6 +59,60 @@ class TellinkProxyController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+    
+    public function getUserDetail($nim)
+    {
+        try {
+            // First, get the full list of users which includes passwords
+            $listResponse = Http::get($this->apiBaseUrl . '/api/mahasiswa');
+            
+            if ($listResponse->successful()) {
+                $resData = $listResponse->json();
+                
+                // Handle different response formats
+                $users = [];
+                if (isset($resData['data']) && is_array($resData['data'])) {
+                    $users = $resData['data'];
+                } elseif (is_array($resData)) {
+                    $users = $resData;
+                }
+                
+                // Find the user by NIM
+                $userData = null;
+                foreach ($users as $user) {
+                    if (isset($user['nim']) && $user['nim'] == $nim) {
+                        $userData = $user;
+                        break;
+                    }
+                }
+                
+                if ($userData) {
+                    // If password is not in the found user data, try single user endpoint
+                    if (!isset($userData['password'])) {
+                        $singleResponse = Http::get($this->apiBaseUrl . '/api/mahasiswa/' . $nim);
+                        if ($singleResponse->successful()) {
+                            $singleData = $singleResponse->json();
+                            // Merge data from single endpoint
+                            $userData = array_merge($userData, $singleData);
+                        }
+                    }
+                    
+                    return response()->json($userData);
+                }
+            }
+            
+            // If not found in list, try single user endpoint as fallback
+            $response = Http::get($this->apiBaseUrl . '/api/mahasiswa/' . $nim);
+            
+            if ($response->successful()) {
+                return response()->json($response->json());
+            }
+            
+            return response()->json(['error' => 'User not found'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
 
     public function getMessages()
     {

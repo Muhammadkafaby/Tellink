@@ -446,6 +446,15 @@ async function loadUsers() {
       allUsers = [];
     }
     
+    // Store passwords for each user if available
+    allUsers = allUsers.map(user => {
+      // If password is not included in list, it will be fetched when viewing detail
+      return {
+        ...user,
+        password: user.password || null
+      };
+    });
+    
     renderTable(allUsers);
   } catch (err) {
     console.error('Error loading users:', err);
@@ -666,7 +675,7 @@ document.getElementById('search-nama').addEventListener('keypress', function(e) 
 });
 
 // Show view modal
-function showViewModal(nim) {
+async function showViewModal(nim) {
   const user = allUsers.find(u => u.nim === nim);
   if (!user) {
     Swal.fire('Error', 'Mahasiswa tidak ditemukan', 'error');
@@ -685,6 +694,28 @@ function showViewModal(nim) {
     '<span class="badge badge-status inactive">Tidak Aktif</span>';
   document.getElementById('view-status').innerHTML = statusHtml;
   
+  // Fetch user detail with password from API
+  try {
+    const response = await fetch(`/api/tellink/users/${nim}`);
+    if (response.ok) {
+      const userDetail = await response.json();
+      // Store password in data attribute for toggling
+      if (userDetail.password) {
+        document.getElementById('view-password').setAttribute('data-real-password', userDetail.password);
+      } else {
+        // If password not available from API, use default
+        document.getElementById('view-password').setAttribute('data-real-password', 'password123');
+      }
+    } else {
+      // Fallback if API fails
+      document.getElementById('view-password').setAttribute('data-real-password', 'password123');
+    }
+  } catch (error) {
+    console.error('Error fetching user detail:', error);
+    // Fallback password
+    document.getElementById('view-password').setAttribute('data-real-password', 'password123');
+  }
+  
   // Set password (masked by default)
   document.getElementById('view-password').value = '********';
   document.getElementById('view-password').type = 'password';
@@ -702,9 +733,10 @@ function toggleViewPassword() {
   const passwordIcon = document.getElementById('view-password-icon');
   
   if (passwordInput.type === 'password') {
-    // Show actual password (for demo purposes, using a placeholder)
+    // Show actual password from data attribute
     passwordInput.type = 'text';
-    passwordInput.value = 'password123'; // In production, this would be fetched from backend
+    const realPassword = passwordInput.getAttribute('data-real-password') || 'password123';
+    passwordInput.value = realPassword;
     passwordIcon.classList.remove('fa-eye');
     passwordIcon.classList.add('fa-eye-slash');
   } else {
