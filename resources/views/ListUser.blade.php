@@ -3,14 +3,9 @@
 @section('content')
 <div class="container-fluid px-4">
   <!-- Header -->
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-      <h2 class="h3 mb-1 text-gray-800 fw-bold">Data Mahasiswa</h2>
-      <p class="text-muted mb-0">Kelola data mahasiswa Tellink</p>
-    </div>
-    <button onclick="showCreateModal()" class="btn btn-danger shadow-sm">
-      <i class="fas fa-plus-circle me-2"></i>Tambah Mahasiswa
-    </button>
+  <div class="mb-4">
+    <h2 class="h3 mb-1 text-gray-800 fw-bold">Data Mahasiswa</h2>
+    <p class="text-muted mb-0">Kelola data mahasiswa Tellink</p>
   </div>
   
   <!-- Stats Cards -->
@@ -89,7 +84,7 @@
   <div class="card border-0 shadow-sm mb-4">
     <div class="card-body">
       <div class="row g-3 align-items-center">
-        <div class="col-md-5">
+        <div class="col-md-6">
           <div class="input-group">
             <span class="input-group-text bg-white border-end-0">
               <i class="fas fa-search text-muted"></i>
@@ -105,18 +100,13 @@
             <option value="D3 Teknik Komputer">D3 TK</option>
           </select>
         </div>
-        <div class="col-md-2">
+        <div class="col-md-3">
           <select id="perPage" class="form-select" onchange="updatePerPage()">
             <option value="10">10 data</option>
             <option value="25">25 data</option>
             <option value="50">50 data</option>
             <option value="100">100 data</option>
           </select>
-        </div>
-        <div class="col-md-2 text-end">
-          <button class="btn btn-outline-secondary" onclick="exportData()" title="Export Data">
-            <i class="fas fa-download me-2"></i>Export
-          </button>
         </div>
       </div>
     </div>
@@ -129,9 +119,6 @@
         <table class="table table-hover mb-0">
           <thead class="bg-light">
             <tr>
-              <th scope="col" class="px-4 py-3 text-uppercase small fw-bold text-muted">
-                <input type="checkbox" class="form-check-input" id="selectAll">
-              </th>
               <th scope="col" class="px-4 py-3 text-uppercase small fw-bold text-muted">Mahasiswa</th>
               <th scope="col" class="px-4 py-3 text-uppercase small fw-bold text-muted">NIM</th>
               <th scope="col" class="px-4 py-3 text-uppercase small fw-bold text-muted">Email</th>
@@ -142,7 +129,7 @@
           </thead>
           <tbody id="user-table-body">
             <tr>
-              <td colspan="7" class="text-center py-5">
+              <td colspan="6" class="text-center py-5">
                 <div class="spinner-border text-danger" role="status">
                   <span class="visually-hidden">Loading...</span>
                 </div>
@@ -473,7 +460,7 @@ async function loadUsers() {
   } catch (err) {
     console.error('Error loading users:', err);
     document.getElementById("user-table-body").innerHTML = 
-      '<tr><td colspan="7" style="text-align:center; color:red;">Error memuat data! Check console for details.</td></tr>';
+      '<tr><td colspan="6" style="text-align:center; color:red;">Error memuat data! Check console for details.</td></tr>';
   }
 }
 
@@ -492,7 +479,7 @@ function renderTable(users) {
   
   if (!paginatedUsers || !paginatedUsers.length) {
     html = `<tr>
-      <td colspan="7" class="text-center py-5">
+      <td colspan="6" class="text-center py-5">
         <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
         <p class="text-muted mb-0">Tidak ada data mahasiswa</p>
       </td>
@@ -509,9 +496,6 @@ function renderTable(users) {
       const avatarColor = avatarColors[index % avatarColors.length];
       
       html += `<tr class="fade-in" style="animation-delay: ${index * 0.05}s">
-        <td class="px-4">
-          <input type="checkbox" class="form-check-input user-checkbox" value="${user.nim}">
-        </td>
         <td class="px-4">
           <div class="d-flex align-items-center">
             <div class="avatar avatar-sm me-3" style="background: ${avatarColor}">
@@ -663,17 +647,9 @@ function exportData() {
   });
 }
 
-// Select all checkbox
+// Document ready
 document.addEventListener('DOMContentLoaded', function() {
-  const selectAllCheckbox = document.getElementById('selectAll');
-  if (selectAllCheckbox) {
-    selectAllCheckbox.addEventListener('change', function() {
-      const checkboxes = document.querySelectorAll('.user-checkbox');
-      checkboxes.forEach(checkbox => {
-        checkbox.checked = this.checked;
-      });
-    });
-  }
+  // Initialize when DOM is ready
 });
 
 // Search functionality
