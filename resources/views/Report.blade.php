@@ -21,30 +21,6 @@
             box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
         }
         
-        .status-badge {
-            padding: 0.35em 0.85em;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .status-pending {
-            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
-            color: white;
-        }
-        
-        .status-resolved {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            color: white;
-        }
-        
-        .status-investigating {
-            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
-            color: white;
-        }
-        
         .table-modern thead th {
             border-bottom: 2px solid #dee2e6;
             font-weight: 600;
@@ -123,7 +99,7 @@
     </style>
     <!-- Stats Cards -->
     <div class="row g-3 mb-4">
-        <div class="col-xl-3 col-md-6">
+        <div class="col-12">
             <div class="card border-0 shadow-sm h-100 stats-card">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
@@ -134,60 +110,6 @@
                         <div class="ms-3">
                             <div class="bg-secondary bg-opacity-10 rounded-circle p-3">
                                 <i class="fas fa-flag text-secondary fa-lg"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-xl-3 col-md-6">
-            <div class="card border-0 shadow-sm h-100 stats-card">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <h6 class="text-uppercase text-muted mb-2 small fw-bold">Pending</h6>
-                            <h3 class="mb-0 fw-bold text-warning" id="pendingReports">0</h3>
-                        </div>
-                        <div class="ms-3">
-                            <div class="bg-warning bg-opacity-10 rounded-circle p-3">
-                                <i class="fas fa-clock text-warning fa-lg"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-xl-3 col-md-6">
-            <div class="card border-0 shadow-sm h-100 stats-card">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <h6 class="text-uppercase text-muted mb-2 small fw-bold">Investigating</h6>
-                            <h3 class="mb-0 fw-bold text-info" id="investigatingReports">0</h3>
-                        </div>
-                        <div class="ms-3">
-                            <div class="bg-info bg-opacity-10 rounded-circle p-3">
-                                <i class="fas fa-search text-info fa-lg"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-xl-3 col-md-6">
-            <div class="card border-0 shadow-sm h-100 stats-card">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <h6 class="text-uppercase text-muted mb-2 small fw-bold">Resolved</h6>
-                            <h3 class="mb-0 fw-bold text-success" id="resolvedReports">0</h3>
-                        </div>
-                        <div class="ms-3">
-                            <div class="bg-success bg-opacity-10 rounded-circle p-3">
-                                <i class="fas fa-check-circle text-success fa-lg"></i>
                             </div>
                         </div>
                     </div>
@@ -209,14 +131,6 @@
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <select id="statusFilter" class="form-select" onchange="applyFilters()">
-                        <option value="">Semua Status</option>
-                        <option value="pending">Pending</option>
-                        <option value="investigating">Investigating</option>
-                        <option value="resolved">Resolved</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
                     <select id="perPageSelect" class="form-select" onchange="applyFilters()">
                         <option value="10" selected>10 data</option>
                         <option value="25">25 data</option>
@@ -250,7 +164,6 @@
                             <th scope="col" class="px-4 py-3 text-uppercase small fw-bold text-muted">Project Title</th>
                             <th scope="col" class="px-4 py-3 text-uppercase small fw-bold text-muted">Reported By</th>
                             <th scope="col" class="px-4 py-3 text-uppercase small fw-bold text-muted">Reason</th>
-                            <th scope="col" class="px-4 py-3 text-uppercase small fw-bold text-muted text-center">Status</th>
                             <th scope="col" class="px-4 py-3 text-uppercase small fw-bold text-muted text-center">Date</th>
                             <th scope="col" class="px-4 py-3 text-uppercase small fw-bold text-muted text-center">Actions</th>
                         </tr>
@@ -302,39 +215,6 @@
         </div>
     </div>
 
-    <!-- Update Status Modal -->
-    <div class="modal fade" id="statusModal" tabindex="-1" aria-labelledby="statusModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content border-0">
-                <div class="modal-header bg-light border-0">
-                    <h5 class="modal-title fw-bold" id="statusModalLabel">Update Report Status</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form id="statusForm">
-                    <div class="modal-body p-4">
-                        <div class="mb-3">
-                            <label for="newStatus" class="form-label small fw-bold text-muted text-uppercase">New Status</label>
-                            <select id="newStatus" class="form-select form-select-lg">
-                                <option value="pending">Pending</option>
-                                <option value="investigating">Investigating</option>
-                                <option value="resolved">Resolved</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="statusNote" class="form-label small fw-bold text-muted text-uppercase">Note (Optional)</label>
-                            <textarea id="statusNote" rows="3" class="form-control" placeholder="Add a note about this status change..."></textarea>
-                        </div>
-                    </div>
-                    <div class="modal-footer bg-light border-0">
-                        <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-danger px-4">
-                            <i class="fas fa-save me-2"></i>Update Status
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
 </div>
 
 <!-- Add Font Awesome and SweetAlert2 -->
@@ -436,14 +316,7 @@ async function fetchData() {
 // Update statistics
 function updateStats() {
     const total = allData.length;
-    const pending = allData.filter(r => r.status === 'pending').length;
-    const investigating = allData.filter(r => r.status === 'investigating').length;
-    const resolved = allData.filter(r => r.status === 'resolved').length;
-    
     document.getElementById('totalReports').textContent = total;
-    document.getElementById('pendingReports').textContent = pending;
-    document.getElementById('investigatingReports').textContent = investigating;
-    document.getElementById('resolvedReports').textContent = resolved;
 }
 
 // Format date
@@ -475,25 +348,6 @@ function formatDate(dateString) {
     });
 }
 
-// Get status badge HTML
-function getStatusBadge(status) {
-    const statusClasses = {
-        'pending': 'status-pending',
-        'investigating': 'status-investigating',
-        'resolved': 'status-resolved'
-    };
-    
-    const statusText = {
-        'pending': 'Pending',
-        'investigating': 'Investigating',
-        'resolved': 'Resolved'
-    };
-    
-    const className = statusClasses[status] || 'status-pending';
-    const text = statusText[status] || status;
-    
-    return `<span class="status-badge ${className}">${text}</span>`;
-}
 
 // Render table
 function renderTable() {
@@ -517,14 +371,10 @@ function renderTable() {
                     ${item.reason || '-'}
                 </div>
             </td>
-            <td class="px-4 text-center">${getStatusBadge(item.status || 'pending')}</td>
             <td class="px-4 text-center"><small class="text-muted">${formatDate(item.createdAt)}</small></td>
             <td class="px-4 text-center">
-                <button onclick="viewDetails('${item.id}')" class="btn btn-sm btn-info me-1" title="View Details">
+                <button onclick="viewDetails('${item.id}')" class="btn btn-sm btn-info" title="View Details">
                     <i class="fas fa-eye"></i>
-                </button>
-                <button onclick="updateStatus('${item.id}')" class="btn btn-sm btn-warning" title="Update Status">
-                    <i class="fas fa-edit"></i>
                 </button>
             </td>
         `;
@@ -603,10 +453,6 @@ function viewDetails(id) {
                 <p class="font-monospace">${item.id}</p>
             </div>
             <div class="col-md-6">
-                <label class="form-label small fw-bold text-muted">Status</label>
-                <p>${getStatusBadge(item.status || 'pending')}</p>
-            </div>
-            <div class="col-md-6">
                 <label class="form-label small fw-bold text-muted">Project ID</label>
                 <p class="font-monospace">${item.projectId}</p>
             </div>
@@ -627,40 +473,16 @@ function viewDetails(id) {
                 <div class="bg-light p-3 rounded">${item.reason}</div>
             </div>
         </div>
-        ${item.statusHistory ? `
-        <div class="mt-4">
-            <label class="form-label small fw-bold text-muted">Status History</label>
-            ${item.statusHistory.map(h => `
-                <div class="bg-light p-3 rounded mb-2">
-                    <span class="fw-semibold">${h.status}</span> - ${formatDate(h.date)}
-                    ${h.note ? `<p class="text-muted mt-1 mb-0">${h.note}</p>` : ''}
-                </div>
-            `).join('')}
-        </div>
-        ` : ''}
     `;
     
     const modal = new bootstrap.Modal(document.getElementById('detailsModal'));
     modal.show();
 }
 
-// Update status function
-function updateStatus(id) {
-    const item = allData.find(d => d.id === id);
-    if (!item) return;
-    
-    currentReportId = id;
-    document.getElementById('newStatus').value = item.status || 'pending';
-    document.getElementById('statusNote').value = '';
-    
-    const modal = new bootstrap.Modal(document.getElementById('statusModal'));
-    modal.show();
-}
 
 // Apply filters
 function applyFilters() {
     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    const statusFilter = document.getElementById('statusFilter').value;
     
     filteredData = allData.filter(item => {
         // Search filter
@@ -670,10 +492,7 @@ function applyFilters() {
             (item.reason && item.reason.toLowerCase().includes(searchTerm)) ||
             (item.projectTitle && item.projectTitle.toLowerCase().includes(searchTerm));
         
-        // Status filter
-        const matchesStatus = statusFilter === '' || item.status === statusFilter;
-        
-        return matchesSearch && matchesStatus;
+        return matchesSearch;
     });
     
     currentPage = 1;
@@ -684,8 +503,6 @@ function applyFilters() {
 // Search functionality
 document.getElementById('searchInput').addEventListener('input', applyFilters);
 
-// Status filter
-document.getElementById('statusFilter').addEventListener('change', applyFilters);
 
 // Per page change
 document.getElementById('perPageSelect').addEventListener('change', function(e) {
@@ -696,43 +513,6 @@ document.getElementById('perPageSelect').addEventListener('change', function(e) 
 });
 
 
-// Handle status form submission
-document.getElementById('statusForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    if (!currentReportId) return;
-    
-    const newStatus = document.getElementById('newStatus').value;
-    const note = document.getElementById('statusNote').value;
-    
-    try {
-        // Since there's no specific endpoint for updating report status in the API docs,
-        // we'll simulate the update locally
-        const report = allData.find(d => d.id === currentReportId);
-        if (report) {
-            report.status = newStatus;
-            if (!report.statusHistory) report.statusHistory = [];
-            report.statusHistory.push({
-                status: newStatus,
-                date: new Date().toISOString(),
-                note: note
-            });
-        }
-        
-        Swal.fire('Berhasil!', 'Status laporan berhasil diupdate', 'success');
-        
-        // Close modal
-        bootstrap.Modal.getInstance(document.getElementById('statusModal')).hide();
-        
-        // Refresh display
-        updateStats();
-        applyFilters();
-        
-    } catch (error) {
-        console.error('Error updating status:', error);
-        Swal.fire('Error!', 'Gagal mengupdate status', 'error');
-    }
-});
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
