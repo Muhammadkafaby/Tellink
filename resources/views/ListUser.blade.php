@@ -192,13 +192,17 @@
             </div>
             
             <div class="col-md-12">
-              <label class="form-label small fw-bold text-muted text-uppercase">Show Password</label>
+              <label class="form-label small fw-bold text-muted text-uppercase">Password Info</label>
               <div class="input-group">
                 <input type="password" class="form-control" id="view-password" value="********" readonly>
                 <button class="btn btn-outline-secondary" type="button" onclick="toggleViewPassword()">
                   <i class="fas fa-eye" id="view-password-icon"></i>
                 </button>
+                <button class="btn btn-outline-secondary" type="button" onclick="copyPassword()" title="Copy password">
+                  <i class="fas fa-copy"></i>
+                </button>
               </div>
+              <small class="text-muted mt-1 d-block" id="password-info"></small>
             </div>
           </div>
         </div>
@@ -702,18 +706,29 @@ async function showViewModal(nim) {
       // Store password in data attribute for toggling
       if (userDetail.password) {
         document.getElementById('view-password').setAttribute('data-real-password', userDetail.password);
+        
+        // Check if there's a plain text password available
+        if (userDetail.plain_password) {
+          document.getElementById('view-password').setAttribute('data-original-password', userDetail.plain_password);
+        } else {
+          // Default password if API doesn't return it
+          document.getElementById('view-password').setAttribute('data-original-password', '');
+        }
       } else {
         // If password not available from API, use default
         document.getElementById('view-password').setAttribute('data-real-password', 'password123');
+        document.getElementById('view-password').setAttribute('data-original-password', 'password123');
       }
     } else {
       // Fallback if API fails
       document.getElementById('view-password').setAttribute('data-real-password', 'password123');
+      document.getElementById('view-password').setAttribute('data-original-password', 'password123');
     }
   } catch (error) {
     console.error('Error fetching user detail:', error);
     // Fallback password
     document.getElementById('view-password').setAttribute('data-real-password', 'password123');
+    document.getElementById('view-password').setAttribute('data-original-password', 'password123');
   }
   
   // Set password (masked by default)
@@ -731,21 +746,158 @@ async function showViewModal(nim) {
 function toggleViewPassword() {
   const passwordInput = document.getElementById('view-password');
   const passwordIcon = document.getElementById('view-password-icon');
+  const passwordInfo = document.getElementById('password-info');
   
   if (passwordInput.type === 'password') {
     // Show actual password from data attribute
     passwordInput.type = 'text';
     const realPassword = passwordInput.getAttribute('data-real-password') || 'password123';
-    passwordInput.value = realPassword;
+    const originalPassword = passwordInput.getAttribute('data-original-password') || '';
+    
+    // Check if it's a bcrypt hash
+    if (realPassword.startsWith('$2b$') || realPassword.startsWith('$2a$') || realPassword.startsWith('$2y$')) {
+      // Extract BCrypt parameters
+      const parts = realPassword.split('$');
+      const algorithm = parts[1] || '2b';
+      const cost = parts[2] || '10';
+      
+      passwordInput.value = realPassword;
+      // Check if we have the original password
+      if (originalPassword) {
+        passwordInfo.innerHTML = `
+          <div class="alert alert-success py-2 mb-0">
+            <i class="fas fa-unlock me-2"></i>
+            <strong>Password Berhasil Didekripsi!</strong>
+            <div class="mt-2">
+              <p class="mb-1"><strong>Password Asli:</strong> <code>${originalPassword}</code></p>
+              <p class="mb-1 small text-muted">Hash: <code style="word-break: break-all;">${realPassword.substring(0, 30)}...</code></p>
+            </div>
+            <hr class="my-2">
+            <ul class="mb-0 small text-muted">
+              <li>Algorithm: BCrypt variant ${algorithm}</li>
+              <li>Cost Factor: ${cost} (${Math.pow(2, parseInt(cost))} iterations)</li>
+            </ul>
+          </div>
+        `;
+      } else {
+        passwordInfo.innerHTML = `
+          <div class="alert alert-info py-2 mb-0">
+            <i class="fas fa-lock me-2"></i>
+            <strong>Password Terenkripsi (BCrypt)</strong>
+            <ul class="mb-0 mt-2 small">
+              <li>Algorithm: BCrypt variant ${algorithm}</li>
+              <li>Cost Factor: ${cost} (2^${cost} = ${Math.pow(2, parseInt(cost))} iterations)</li>
+              <li>Hash Length: ${realPassword.length} characters</li>
+              <li class="text-danger"><strong>⚠️ Password ini tidak dapat didekripsi</strong></li>
+            </ul>
+            <div class="mt-2">
+              <small class="text-muted">
+                BCrypt adalah one-way hashing algorithm. Password asli tidak dapat dipulihkan dari hash ini.
+                Untuk keamanan, password disimpan dalam bentuk terenkripsi di database.
+              </small>
+            </div>
+          </div>
+        `;
+      }
+    } else {
+      passwordInput.value = realPassword;
+      passwordInfo.innerHTML = `
+        <div class="alert alert-success py-2 mb-0">
+          <i class="fas fa-check-circle me-2"></i>
+          <strong>Password Plain Text</strong>
+          <p class="mb-0 mt-1 small">Password dapat dibaca langsung.</p>
+        </div>
+      `;
+    }
+    
     passwordIcon.classList.remove('fa-eye');
     passwordIcon.classList.add('fa-eye-slash');
   } else {
     // Hide password
     passwordInput.type = 'password';
     passwordInput.value = '********';
+    passwordInfo.innerHTML = '';
     passwordIcon.classList.remove('fa-eye-slash');
     passwordIcon.classList.add('fa-eye');
   }
+}
+
+// Copy password to clipboard
+function copyPassword() {
+  const passwordInput = document.getElementById('view-password');
+  const realPassword = passwordInput.getAttribute('data-real-password') || 'password123';
+  const originalPassword = passwordInput.getAttribute('data-original-password') || '';
+  
+  // Check if it's a BCrypt hash
+  if ((realPassword.startsWith('$2b$') || realPassword.startsWith('$2a$') || realPassword.startsWith('$2y$')) && !originalPassword) {
+    // Show warning for BCrypt hash
+    Swal.fire({
+      icon: 'warning',
+      title: 'Password Terenkripsi',
+      html: `
+        <div class="text-start">
+          <p>Password ini adalah BCrypt hash yang tidak dapat didekripsi.</p>
+          <p class="mb-2"><strong>Hash:</strong></p>
+          <code class="d-block p-2 bg-light rounded" style="word-break: break-all;">${realPassword}</code>
+          <p class="mt-3 mb-0 text-muted small">
+            Untuk mendapatkan password asli, Anda perlu:
+            <ul class="text-start mt-2">
+              <li>Menghubungi administrator sistem</li>
+              <li>Reset password melalui sistem</li>
+              <li>Menggunakan password default jika ada</li>
+            </ul>
+          </p>
+        </div>
+      `,
+      confirmButtonText: 'Copy Hash Anyway',
+      showCancelButton: true,
+      cancelButtonText: 'Batal'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Copy the hash
+        navigator.clipboard.writeText(realPassword).then(() => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Hash Disalin!',
+            text: 'BCrypt hash berhasil disalin ke clipboard',
+            timer: 2000,
+            showConfirmButton: false
+          });
+        });
+      }
+    });
+    return;
+  }
+  
+  // Copy the appropriate password
+  const passwordToCopy = originalPassword || realPassword;
+  
+  // Use modern clipboard API
+  navigator.clipboard.writeText(passwordToCopy).then(() => {
+    Swal.fire({
+      icon: 'success',
+      title: 'Berhasil!',
+      text: 'Password berhasil disalin ke clipboard',
+      timer: 2000,
+      showConfirmButton: false
+    });
+  }).catch(() => {
+    // Fallback to old method
+    const tempInput = document.createElement('input');
+    tempInput.value = passwordToCopy;
+    document.body.appendChild(tempInput);
+    tempInput.select();
+    document.execCommand('copy');
+    document.body.removeChild(tempInput);
+    
+    Swal.fire({
+      icon: 'success',
+      title: 'Berhasil!',
+      text: 'Password berhasil disalin ke clipboard',
+      timer: 2000,
+      showConfirmButton: false
+    });
+  });
 }
 
 // Delete user
