@@ -3,11 +3,8 @@
 @section('content')
 <div class="container mt-4">
   <!-- Header -->
-  <div class="d-flex justify-content-between align-items-center mb-4">
+  <div class="mb-4">
     <h2 class="mb-0">Data Mahasiswa</h2>
-    <button onclick="showCreateModal()" class="btn btn-success">
-      <i class="fas fa-plus"></i> Tambah Mahasiswa
-    </button>
   </div>
   
   <!-- Search Bar -->

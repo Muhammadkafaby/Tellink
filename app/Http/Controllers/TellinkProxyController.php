@@ -63,28 +63,76 @@ class TellinkProxyController extends Controller
     public function getMessages()
     {
         try {
-            $response = Http::get($this->apiBaseUrl . '/api/messages');
+            // Use /api/projects endpoint which is working
+            \Log::info('Fetching projects from: ' . $this->apiBaseUrl . '/api/projects');
+            
+            $response = Http::timeout(30)->get($this->apiBaseUrl . '/api/projects');
+            
+            \Log::info('API Response Status: ' . $response->status());
             
             if ($response->successful()) {
-                return response()->json($response->json());
+                $responseData = $response->json();
+                \Log::info('Projects API Response:', ['data' => $responseData]);
+                
+                // Check if response has success structure
+                if (isset($responseData['success']) && $responseData['success'] && isset($responseData['data'])) {
+                    // Transform API response to match our frontend structure
+                    $posts = array_map(function($post) {
+                        // Convert Firebase timestamp to date
+                        $date = date('Y-m-d');
+                        if (isset($post['createdAt']['seconds'])) {
+                            $date = date('Y-m-d', $post['createdAt']['seconds']);
+                        }
+                        
+                        return [
+                            'id' => $post['id'] ?? uniqid(),
+                            'nim' => $post['nim'] ?? '',
+                            'date' => $date,
+                            'desc' => $post['desc'] ?? '',
+                            'images' => $post['image'] ?? null,
+                            'likes' => $post['likes'] ?? 0,
+                            'title' => $post['title'] ?? ''
+                        ];
+                    }, $responseData['data']);
+                    
+                    return response()->json($posts);
+                }
+                
+                // If data structure is different, return as is
+                return response()->json($responseData);
             }
             
-            return response()->json(['error' => 'Failed to fetch messages'], 500);
+            // Log error and return empty array
+            \Log::error('Failed to fetch projects', [
+                'status' => $response->status(),
+                'body' => substr($response->body(), 0, 500)
+            ]);
+            
+            return response()->json([]);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            \Log::error('Error fetching projects: ' . $e->getMessage());
+            return response()->json([]);
         }
     }
 
     public function createMessage(Request $request)
     {
         try {
-            $response = Http::post($this->apiBaseUrl . '/api/messages', $request->all());
+            // According to API docs, use /api/addproject with multipart/form-data
+            $response = Http::asMultipart()
+                ->attach('image', $request->get('images', ''), 'image.jpg')
+                ->post($this->apiBaseUrl . '/api/addproject', [
+                    'nim' => $request->get('nim'),
+                    'title' => $request->get('title'),
+                    'description' => $request->get('desc'),
+                    'requirements' => $request->get('requirements', 'General')
+                ]);
             
             if ($response->successful()) {
                 return response()->json($response->json());
             }
             
-            return response()->json(['error' => 'Failed to create message'], 500);
+            return response()->json(['error' => 'Failed to create project'], 500);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -93,13 +141,22 @@ class TellinkProxyController extends Controller
     public function updateMessage(Request $request, $id)
     {
         try {
-            $response = Http::put($this->apiBaseUrl . '/api/messages/' . $id, $request->all());
+            // According to API docs, use /api/editproject with multipart/form-data
+            $response = Http::asMultipart()
+                ->attach('image', $request->get('images', ''), 'image.jpg')
+                ->post($this->apiBaseUrl . '/api/editproject', [
+                    'projectId' => $id,
+                    'nim' => $request->get('nim'),
+                    'title' => $request->get('title'),
+                    'description' => $request->get('desc'),
+                    'requirements' => $request->get('requirements', 'General')
+                ]);
             
             if ($response->successful()) {
                 return response()->json($response->json());
             }
             
-            return response()->json(['error' => 'Failed to update message'], 500);
+            return response()->json(['error' => 'Failed to update project'], 500);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -108,13 +165,17 @@ class TellinkProxyController extends Controller
     public function deleteMessage($id)
     {
         try {
-            $response = Http::delete($this->apiBaseUrl . '/api/messages/' . $id);
+            // According to API docs, use /api/deleteproject
+            $response = Http::post($this->apiBaseUrl . '/api/deleteproject', [
+                'projectId' => $id,
+                'nim' => request()->get('nim', auth()->user()->nim ?? '')
+            ]);
             
             if ($response->successful()) {
                 return response()->json(['success' => true]);
             }
             
-            return response()->json(['error' => 'Failed to delete message'], 500);
+            return response()->json(['error' => 'Failed to delete project'], 500);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
