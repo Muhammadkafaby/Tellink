@@ -126,13 +126,12 @@
               <th scope="col" class="px-4 py-3 text-uppercase small fw-bold text-muted">Mahasiswa</th>
               <th scope="col" class="px-4 py-3 text-uppercase small fw-bold text-muted">NIM</th>
               <th scope="col" class="px-4 py-3 text-uppercase small fw-bold text-muted">Jurusan</th>
-              <th scope="col" class="px-4 py-3 text-uppercase small fw-bold text-muted">Status</th>
               <th scope="col" class="px-4 py-3 text-uppercase small fw-bold text-muted text-center">Aksi</th>
             </tr>
           </thead>
           <tbody id="user-table-body">
             <tr>
-              <td colspan="5" class="text-center py-5">
+              <td colspan="4" class="text-center py-5">
                 <div class="spinner-border text-danger" role="status">
                   <span class="visually-hidden">Loading...</span>
                 </div>
@@ -184,12 +183,6 @@
               <p class="form-control-plaintext fs-5" id="view-jurusan">-</p>
             </div>
             
-            <div class="col-md-6">
-              <label class="form-label small fw-bold text-muted text-uppercase">Status</label>
-              <p class="form-control-plaintext" id="view-status">
-                <span class="badge badge-status active">Aktif</span>
-              </p>
-            </div>
             
             <div class="col-md-12">
               <label class="form-label small fw-bold text-muted text-uppercase">Password Info</label>
@@ -299,21 +292,6 @@
   font-weight: 500;
   font-size: 0.75rem;
   letter-spacing: 0.5px;
-}
-
-.badge-status {
-  padding: 0.35em 0.85em;
-  border-radius: 20px;
-}
-
-.badge-status.active {
-  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-  color: white;
-}
-
-.badge-status.inactive {
-  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
-  color: white;
 }
 
 /* Button Styles */
@@ -463,7 +441,7 @@ async function loadUsers() {
   } catch (err) {
     console.error('Error loading users:', err);
     document.getElementById("user-table-body").innerHTML = 
-      '<tr><td colspan="5" style="text-align:center; color:red;">Error memuat data! Check console for details.</td></tr>';
+      '<tr><td colspan="4" style="text-align:center; color:red;">Error memuat data! Check console for details.</td></tr>';
   }
 }
 
@@ -482,14 +460,13 @@ function renderTable(users) {
   
   if (!paginatedUsers || !paginatedUsers.length) {
     html = `<tr>
-      <td colspan="5" class="text-center py-5">
+      <td colspan="4" class="text-center py-5">
         <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
         <p class="text-muted mb-0">Tidak ada data mahasiswa</p>
       </td>
     </tr>`;
   } else {
     paginatedUsers.forEach((user, index) => {
-      const isActive = Math.random() > 0.3; // Random status for demo
       const avatarColors = [
         'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
@@ -516,11 +493,6 @@ function renderTable(users) {
         <td class="px-4">
           <span class="badge bg-info bg-opacity-10 text-info">
             ${user.jurusan || 'D3 Rekayasa Perangkat Lunak'}
-          </span>
-        </td>
-        <td class="px-4">
-          <span class="badge badge-status ${isActive ? 'active' : 'inactive'}">
-            ${isActive ? 'Aktif' : 'Tidak Aktif'}
           </span>
         </td>
         <td class="px-4 text-center">
@@ -690,13 +662,6 @@ async function showViewModal(nim) {
   document.getElementById('view-nim').innerText = user.nim || '-';
   document.getElementById('view-nama').innerText = user.nama || user.name || '-';
   document.getElementById('view-jurusan').innerText = user.jurusan || 'D3 Rekayasa Perangkat Lunak';
-  
-  // Set status badge
-  const isActive = Math.random() > 0.3; // Random status for demo
-  const statusHtml = isActive ? 
-    '<span class="badge badge-status active">Aktif</span>' : 
-    '<span class="badge badge-status inactive">Tidak Aktif</span>';
-  document.getElementById('view-status').innerHTML = statusHtml;
   
   // Fetch user detail with password from API
   try {

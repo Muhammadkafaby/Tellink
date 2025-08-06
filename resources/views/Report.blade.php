@@ -127,7 +127,7 @@
                         <span class="input-group-text bg-white border-end-0">
                             <i class="fas fa-search text-muted"></i>
                         </span>
-                        <input type="text" id="searchInput" class="form-control border-start-0 ps-0" placeholder="Cari project ID, NIM, atau alasan..." onkeyup="applyFilters()">
+                        <input type="text" id="searchInput" class="form-control border-start-0 ps-0" placeholder="Cari project ID, NIM, atau deskripsi..." onkeyup="applyFilters()">
                     </div>
                 </div>
                 <div class="col-md-3">
@@ -162,8 +162,8 @@
                             <th scope="col" class="px-4 py-3 text-uppercase small fw-bold text-muted">Report ID</th>
                             <th scope="col" class="px-4 py-3 text-uppercase small fw-bold text-muted">Project ID</th>
                             <th scope="col" class="px-4 py-3 text-uppercase small fw-bold text-muted">Project Title</th>
-                            <th scope="col" class="px-4 py-3 text-uppercase small fw-bold text-muted">Reported By</th>
-                            <th scope="col" class="px-4 py-3 text-uppercase small fw-bold text-muted">Reason</th>
+                            <th scope="col" class="px-4 py-3 text-uppercase small fw-bold text-muted">NIM</th>
+                            <th scope="col" class="px-4 py-3 text-uppercase small fw-bold text-muted">Deskripsi</th>
                             <th scope="col" class="px-4 py-3 text-uppercase small fw-bold text-muted text-center">Date</th>
                             <th scope="col" class="px-4 py-3 text-uppercase small fw-bold text-muted text-center">Actions</th>
                         </tr>
@@ -365,10 +365,10 @@ function renderTable() {
             <td class="px-4"><span class="badge bg-secondary font-monospace">${item.id ? item.id.substring(0, 8) + '...' : '-'}</span></td>
             <td class="px-4"><span class="badge bg-secondary font-monospace">${item.projectId ? item.projectId.substring(0, 8) + '...' : '-'}</span></td>
             <td class="px-4 fw-semibold">${item.projectTitle || 'Unknown Project'}</td>
-            <td class="px-4">${item.reportedBy || '-'}</td>
+            <td class="px-4">${item.nim || '-'}</td>
             <td class="px-4">
-                <div class="text-truncate" style="max-width: 200px;" title="${item.reason || ''}">
-                    ${item.reason || '-'}
+                <div class="text-truncate" style="max-width: 200px;" title="${item.desc || ''}">
+                    ${item.desc || '-'}
                 </div>
             </td>
             <td class="px-4 text-center"><small class="text-muted">${formatDate(item.createdAt)}</small></td>
@@ -461,16 +461,16 @@ function viewDetails(id) {
                 <p>${item.projectTitle || 'Unknown Project'}</p>
             </div>
             <div class="col-md-6">
-                <label class="form-label small fw-bold text-muted">Reported By</label>
-                <p>${item.reportedBy}</p>
+                <label class="form-label small fw-bold text-muted">NIM</label>
+                <p>${item.nim || '-'}</p>
             </div>
             <div class="col-md-6">
                 <label class="form-label small fw-bold text-muted">Report Date</label>
                 <p>${formatDate(item.createdAt)}</p>
             </div>
             <div class="col-12">
-                <label class="form-label small fw-bold text-muted">Reason for Report</label>
-                <div class="bg-light p-3 rounded">${item.reason}</div>
+                <label class="form-label small fw-bold text-muted">Deskripsi Laporan</label>
+                <div class="bg-light p-3 rounded">${item.desc || '-'}</div>
             </div>
         </div>
     `;
@@ -488,8 +488,8 @@ function applyFilters() {
         // Search filter
         const matchesSearch = searchTerm === '' || 
             (item.projectId && item.projectId.toLowerCase().includes(searchTerm)) ||
-            (item.reportedBy && item.reportedBy.toLowerCase().includes(searchTerm)) ||
-            (item.reason && item.reason.toLowerCase().includes(searchTerm)) ||
+            (item.nim && item.nim.toLowerCase().includes(searchTerm)) ||
+            (item.desc && item.desc.toLowerCase().includes(searchTerm)) ||
             (item.projectTitle && item.projectTitle.toLowerCase().includes(searchTerm));
         
         return matchesSearch;
