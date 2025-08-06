@@ -429,6 +429,7 @@
 .pagination-modern .page-item.active .page-link {
   background-color: var(--primary-color);
   border-color: var(--primary-color);
+  color: white !important;
 }
 
 /* Animations */

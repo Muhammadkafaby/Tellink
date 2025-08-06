@@ -421,6 +421,7 @@
 .pagination-modern .page-item.active .page-link {
   background-color: #dc3545;
   border-color: #dc3545;
+  color: white !important;
 }
 
 /* Like Button Animation */

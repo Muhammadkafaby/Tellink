@@ -116,10 +116,11 @@
             transform: translateY(-2px);
         }
         
-        .pagination-modern .page-item.active .page-link {
-            background-color: #dc3545;
-            border-color: #dc3545;
-        }
+.pagination .page-item.active .page-link {
+  background-color: #dc3545;
+  border-color: #dc3545;
+  color: white !important;
+}
         
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
