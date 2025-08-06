@@ -403,4 +403,114 @@ class TellinkProxyController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+    
+    /**
+     * Delete a project using the new API format
+     */
+    public function deleteProject(Request $request)
+    {
+        try {
+            \Log::info('Delete project request:', $request->all());
+            
+            // Validate request - API expects just 'id' field
+            $request->validate([
+                'id' => 'required'
+            ]);
+            
+            // Call the external API with just 'id' field
+            $response = Http::post($this->apiBaseUrl . '/api/deleteproject', [
+                'id' => $request->get('id')
+            ]);
+            
+            \Log::info('Delete project response:', [
+                'status' => $response->status(),
+                'body' => $response->json()
+            ]);
+            
+            if ($response->successful()) {
+                return response()->json(['success' => true, 'message' => 'Project deleted successfully']);
+            }
+            
+            // Return error with details
+            $errorData = $response->json();
+            return response()->json([
+                'success' => false,
+                'error' => 'Failed to delete project',
+                'message' => $errorData['message'] ?? 'Unknown error occurred'
+            ], $response->status() ?: 500);
+            
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Validation failed',
+                'message' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            \Log::error('Delete project exception:', ['error' => $e->getMessage()]);
+            return response()->json([
+                'success' => false,
+                'error' => 'Server error',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+    
+    /**
+     * Edit a project using the new API format
+     */
+    public function editProject(Request $request)
+    {
+        try {
+            \Log::info('Edit project request:', $request->all());
+            
+            // Prepare multipart request
+            $multipart = Http::asMultipart();
+            
+            // Add form fields
+            $multipart = $multipart
+                ->attach('projectId', $request->get('projectId'))
+                ->attach('nim', $request->get('nim'))
+                ->attach('title', $request->get('title'))
+                ->attach('description', $request->get('description'))
+                ->attach('requirements', $request->get('requirements', ''));
+            
+            // Add image if provided
+            if ($request->hasFile('image')) {
+                $file = $request->file('image');
+                $multipart = $multipart->attach(
+                    'image',
+                    file_get_contents($file->getRealPath()),
+                    $file->getClientOriginalName()
+                );
+            }
+            
+            // Make the API call
+            $response = $multipart->post($this->apiBaseUrl . '/api/editproject');
+            
+            \Log::info('Edit project response:', [
+                'status' => $response->status(),
+                'body' => $response->json()
+            ]);
+            
+            if ($response->successful()) {
+                return response()->json(['success' => true, 'message' => 'Project updated successfully']);
+            }
+            
+            // Return error with details
+            $errorData = $response->json();
+            return response()->json([
+                'success' => false,
+                'error' => 'Failed to update project',
+                'message' => $errorData['message'] ?? 'Unknown error occurred'
+            ], $response->status() ?: 500);
+            
+        } catch (\Exception $e) {
+            \Log::error('Edit project exception:', ['error' => $e->getMessage()]);
+            return response()->json([
+                'success' => false,
+                'error' => 'Server error',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

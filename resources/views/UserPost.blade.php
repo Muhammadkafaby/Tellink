@@ -84,7 +84,7 @@
   <div class="card border-0 shadow-sm mb-4">
     <div class="card-body">
       <div class="row g-3 align-items-center">
-        <div class="col-md-5">
+        <div class="col-md-6">
           <div class="input-group">
             <span class="input-group-text bg-white border-end-0">
               <i class="fas fa-search text-muted"></i>
@@ -92,23 +92,10 @@
             <input type="text" id="search-post" class="form-control border-start-0 ps-0" placeholder="Cari judul, deskripsi, atau NIM..." onkeyup="searchPosts()">
           </div>
         </div>
-        <div class="col-md-2">
-          <select id="filter-kategori" class="form-select" onchange="searchPosts()">
-            <option value="">Semua Kategori</option>
-            <option value="Web Development">Web Development</option>
-            <option value="Mobile App">Mobile App</option>
-            <option value="Data Science">Data Science</option>
-            <option value="UI/UX Design">UI/UX Design</option>
-            <option value="Machine Learning">Machine Learning</option>
-            <option value="IoT Project">IoT Project</option>
-            <option value="Game Development">Game Development</option>
-            <option value="Lainnya">Lainnya</option>
-          </select>
-        </div>
-        <div class="col-md-2">
+        <div class="col-md-3">
           <input type="date" id="filter-date" class="form-control" onchange="searchPosts()" placeholder="Filter tanggal">
         </div>
-        <div class="col-md-2">
+        <div class="col-md-3">
           <select id="perPage" class="form-select" onchange="updatePerPage()">
             <option value="10">10 data</option>
             <option value="25">25 data</option>
@@ -163,9 +150,8 @@
               </div>
               
               <div class="col-md-6">
-                <label for="form-date" class="form-label small fw-bold text-muted text-uppercase">Tanggal <span class="text-danger">*</span></label>
-                <input type="date" class="form-control form-control-lg" id="form-date" required>
-                <div class="invalid-feedback">Tanggal wajib diisi</div>
+                <label for="form-requirements" class="form-label small fw-bold text-muted text-uppercase">Requirements</label>
+                <input type="text" class="form-control form-control-lg" id="form-requirements" placeholder="Requirements yang dibutuhkan">
               </div>
               
               <div class="col-12">
@@ -452,10 +438,186 @@
 </style>
 
 <script>
+// Declare global variables
 let allPosts = [];
 let currentPage = 1;
 let perPage = 10;
 let deletePostId = null;
+
+// Define all functions in global scope immediately
+window.viewPost = function(id) {
+  console.log('viewPost called with id:', id);
+  const post = allPosts.find(p => p.id == id);  // Use == instead of === to handle string/number comparison
+  if (!post) {
+    console.error('Post not found with id:', id, 'Available posts:', allPosts);
+    return;
+  }
+  
+  Swal.fire({
+    title: escapeHtml(post.title || 'Untitled'),
+    html: `
+      <div class="text-start">
+        ${post.images ? `<img src="${post.images}" class="img-fluid rounded mb-3" alt="Post image">` : ''}
+        <p class="text-muted"><i class="fas fa-user me-2"></i>NIM: ${post.nim || 'Unknown'}</p>
+        <p class="text-muted"><i class="fas fa-calendar me-2"></i>${formatDate(post.date)}</p>
+        <hr>
+        <p>${escapeHtml(post.desc || 'No description')}</p>
+        <hr>
+        <div class="d-flex justify-content-between align-items-center">
+          <span class="badge bg-danger"><i class="fas fa-heart me-1"></i>${post.likes || 0} Likes</span>
+        </div>
+      </div>
+    `,
+    showCloseButton: true,
+    showConfirmButton: false,
+    width: '600px'
+  });
+};
+
+window.showEditModal = function(id) {
+  console.log('showEditModal called with id:', id);
+  const post = allPosts.find(p => p.id == id);  // Use == instead of === to handle string/number comparison
+  if (!post) {
+    console.error('Post not found with id:', id, 'Available posts:', allPosts);
+    Swal.fire('Error', 'Post tidak ditemukan', 'error');
+    return;
+  }
+  
+  document.getElementById('modal-title').innerText = 'Edit Postingan';
+  document.getElementById('edit-id').value = id;
+  document.getElementById('form-nim').value = post.nim || '';
+  // Remove form-date since we don't have that field anymore
+  document.getElementById('form-title').value = post.title || '';
+  document.getElementById('form-desc').value = post.desc || '';
+  document.getElementById('form-requirements').value = post.requirements || '';
+  document.getElementById('form-image').value = post.images || '';
+  
+  if (post.images) {
+    document.getElementById('image-preview').innerHTML = `<img src="${post.images}" class="img-thumbnail">`;
+  } else {
+    document.getElementById('image-preview').innerHTML = '';
+  }
+  
+  const modal = new bootstrap.Modal(document.getElementById('postModal'));
+  modal.show();
+};
+
+window.deletePost = async function(id) {
+  console.log('deletePost called with id:', id, 'Type:', typeof id);
+  console.log('All posts before delete:', allPosts.map(p => ({id: p.id, type: typeof p.id, title: p.title})));
+  
+  const post = allPosts.find(p => p.id == id);  // Use == instead of === to handle string/number comparison
+  if (!post) {
+    console.error('Post not found with id:', id, 'Available posts:', allPosts);
+    Swal.fire('Error', 'Post tidak ditemukan', 'error');
+    return;
+  }
+  
+  console.log('Found post to delete:', post);
+  
+  const result = await Swal.fire({
+    title: 'Konfirmasi Hapus',
+    text: 'Yakin ingin menghapus postingan ini?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Ya, Hapus!',
+    cancelButtonText: 'Batal'
+  });
+  
+  if (!result.isConfirmed) return;
+  
+  try {
+    const response = await fetch('/deleteproject', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      },
+      credentials: 'same-origin',
+      body: JSON.stringify({
+        id: id.toString()  // API expects just 'id' field
+      })
+    });
+    
+    // Check if response is ok
+    const responseData = await response.json();
+    
+    if (!response.ok) {
+      // API failed, show error and don't delete from display
+      console.error('API delete failed:', responseData);
+      
+      Swal.fire({
+        title: 'Gagal Menghapus',
+        text: responseData.message || 'Tidak dapat menghapus postingan. Silakan coba lagi nanti.',
+        icon: 'error'
+      });
+      
+      return; // Exit without removing from display
+    }
+    
+    // Only remove from array if API call was successful
+    console.log('API delete successful, removing from display');
+    console.log('Before filter - allPosts length:', allPosts.length);
+    console.log('Deleting ID:', id, 'Type:', typeof id);
+    
+    allPosts = allPosts.filter(p => {
+      const keep = p.id != id;
+      console.log(`Comparing post.id ${p.id} (${typeof p.id}) with ${id} (${typeof id}): keep=${keep}`);
+      return keep;
+    });
+    
+    console.log('After filter - allPosts length:', allPosts.length);
+    console.log('Remaining posts:', allPosts.map(p => ({id: p.id, title: p.title})));
+    
+    // Show success message
+    Swal.fire('Terhapus!', 'Postingan berhasil dihapus.', 'success');
+    
+    // Re-render
+    renderTable();
+    
+  } catch(e) {
+    console.error('Error in delete operation:', e);
+    
+    // Show error message
+    Swal.fire({
+      title: 'Error',
+      text: 'Terjadi kesalahan saat menghapus postingan. Silakan coba lagi.',
+      icon: 'error'
+    });
+  }
+};
+
+window.likePost = function(id) {
+  console.log('likePost called with id:', id);
+  const post = allPosts.find(p => p.id == id);  // Use == instead of === to handle string/number comparison
+  if (!post) {
+    console.error('Post not found with id:', id, 'Available posts:', allPosts);
+    return;
+  }
+  
+  // Toggle like
+  post.liked = !post.liked;
+  post.likes = (post.likes || 0) + (post.liked ? 1 : -1);
+  
+  // Re-render
+  renderTable();
+  
+  // You could also make an API call here to persist the like
+};
+
+window.showImage = function(imageUrl) {
+  Swal.fire({
+    imageUrl: imageUrl,
+    imageAlt: 'Post image',
+    showConfirmButton: false,
+    showCloseButton: true,
+    width: 'auto'
+  });
+};
 
 // Load posts on page load
 async function loadPosts() {
@@ -553,7 +715,7 @@ function renderTable() {
                 </div>
                 
                 <div class="post-card-stats">
-                  <button class="btn btn-sm btn-like ${post.liked ? 'liked' : ''}" onclick="likePost(${post.id})">
+                  <button type="button" class="btn btn-sm btn-like ${post.liked ? 'liked' : ''}" onclick="likePost('${post.id}')">
                     <i class="fas fa-heart"></i> ${post.likes || 0}
                   </button>
                 </div>
@@ -561,14 +723,14 @@ function renderTable() {
             </div>
             
             <div class="post-card-actions">
-              <button onclick="viewPost(${post.id})" class="btn btn-sm btn-outline-primary">
+              <button type="button" onclick="viewPost('${post.id}')" class="btn btn-sm btn-outline-primary">
                 <i class="fas fa-eye me-1"></i>View
               </button>
               <div>
-                <button onclick="showEditModal(${post.id})" class="btn btn-sm btn-warning me-1">
+                <button type="button" onclick="showEditModal('${post.id}')" class="btn btn-sm btn-warning me-1" title="Edit">
                   <i class="fas fa-edit"></i>
                 </button>
-                <button onclick="deletePost(${post.id})" class="btn btn-sm btn-danger">
+                <button type="button" onclick="deletePost('${post.id}')" class="btn btn-sm btn-danger" title="Delete">
                   <i class="fas fa-trash"></i>
                 </button>
               </div>
@@ -659,46 +821,7 @@ function changePage(page) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// View post details
-function viewPost(id) {
-  const post = allPosts.find(p => p.id === id);
-  if (!post) return;
-  
-  Swal.fire({
-    title: escapeHtml(post.title || 'Untitled'),
-    html: `
-      <div class="text-start">
-        ${post.images ? `<img src="${post.images}" class="img-fluid rounded mb-3" alt="Post image">` : ''}
-        <p class="text-muted"><i class="fas fa-user me-2"></i>NIM: ${post.nim || 'Unknown'}</p>
-        <p class="text-muted"><i class="fas fa-calendar me-2"></i>${formatDate(post.date)}</p>
-        <hr>
-        <p>${escapeHtml(post.desc || 'No description')}</p>
-        <hr>
-        <div class="d-flex justify-content-between align-items-center">
-          <span class="badge bg-danger"><i class="fas fa-heart me-1"></i>${post.likes || 0} Likes</span>
-        </div>
-      </div>
-    `,
-    showCloseButton: true,
-    showConfirmButton: false,
-    width: '600px'
-  });
-}
-
-// Like post
-function likePost(id) {
-  const post = allPosts.find(p => p.id === id);
-  if (!post) return;
-  
-  // Toggle like
-  post.liked = !post.liked;
-  post.likes = (post.likes || 0) + (post.liked ? 1 : -1);
-  
-  // Re-render
-  renderTable();
-  
-  // You could also make an API call here to persist the like
-}
+// These functions are now defined at the top of the script
 
 // Export posts
 function exportPosts() {
@@ -731,7 +854,6 @@ function searchPosts() {
 function getFilteredPosts() {
   const query = document.getElementById('search-post').value.toLowerCase();
   const dateFilter = document.getElementById('filter-date').value;
-  const kategoriFilter = document.getElementById('filter-kategori').value;
   
   return allPosts.filter(post => {
     const matchesQuery = !query || 
@@ -741,9 +863,7 @@ function getFilteredPosts() {
     
     const matchesDate = !dateFilter || post.date === dateFilter;
     
-    const matchesKategori = !kategoriFilter || post.kategori === kategoriFilter;
-    
-    return matchesQuery && matchesDate && matchesKategori;
+    return matchesQuery && matchesDate;
   });
 }
 
@@ -754,9 +874,10 @@ function updatePerPage() {
   renderTable();
 }
 
-// Show create modal
+
+// Show create modal function remains here
 function showCreateModal() {
-  document.getElementById('modal-title').innerText = 'Tambah Postingan Baru';
+  document.getElementById('modal-title').innerText = 'Tambah Project Baru';
   document.getElementById('postForm').reset();
   document.getElementById('edit-id').value = '';
   document.getElementById('image-preview').innerHTML = '';
@@ -765,74 +886,78 @@ function showCreateModal() {
   modal.show();
 }
 
-// Show edit modal
-function showEditModal(id) {
-  const post = allPosts.find(p => p.id === id);
-  if (!post) {
-    Swal.fire('Error', 'Post tidak ditemukan', 'error');
-    return;
-  }
-  
-  document.getElementById('modal-title').innerText = 'Edit Postingan';
-  document.getElementById('edit-id').value = id;
-  document.getElementById('form-nim').value = post.nim || '';
-  document.getElementById('form-date').value = post.date || '';
-  document.getElementById('form-title').value = post.title || '';
-  document.getElementById('form-desc').value = post.desc || '';
-  document.getElementById('form-image').value = post.images || '';
-  
-  if (post.images) {
-    document.getElementById('image-preview').innerHTML = `<img src="${post.images}" class="img-thumbnail">`;
-  }
-  
-  const modal = new bootstrap.Modal(document.getElementById('postModal'));
-  modal.show();
-}
-
 // Submit form
 async function submitForm() {
   const editId = document.getElementById('edit-id').value;
-  const data = {
-    nim: document.getElementById('form-nim').value,
-    date: document.getElementById('form-date').value,
-    title: document.getElementById('form-title').value,
-    desc: document.getElementById('form-desc').value,
-    images: document.getElementById('form-image').value || null,
-    likes: 0
-  };
   
-  if (!data.nim || !data.date || !data.title || !data.desc) {
-    Swal.fire('Error', 'Semua field wajib diisi!', 'error');
+  // Prepare form data
+  const formData = new FormData();
+  formData.append('nim', document.getElementById('form-nim').value);
+  formData.append('title', document.getElementById('form-title').value);
+  formData.append('description', document.getElementById('form-desc').value);
+  formData.append('requirements', document.getElementById('form-requirements').value || '');
+  
+  // Check if an image URL is provided (you may want to handle file upload differently)
+  const imageUrl = document.getElementById('form-image').value;
+  if (imageUrl) {
+    // For now, we'll just send the URL as a text field
+    // In a real implementation, you'd handle file upload
+    formData.append('imageUrl', imageUrl);
+  }
+  
+  // Validate required fields
+  if (!formData.get('nim') || !formData.get('title') || !formData.get('description')) {
+    Swal.fire('Error', 'NIM, Judul, dan Deskripsi wajib diisi!', 'error');
     return;
   }
   
   try {
     let response;
     if (editId) {
-      // Update existing post
-      response = await fetch(`/api/tellink/messages/${editId}`, {
-        method: 'PUT',
+      // Update existing post using the editproject API
+      formData.append('projectId', editId);
+      
+      response = await fetch('/editproject', {
+        method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
           'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
         },
-        body: JSON.stringify(data)
+        credentials: 'same-origin',
+        body: formData
       });
     } else {
-      // Create new post
+      // Create new post - keeping the original API for now
+      // You might want to change this to match your API pattern
+      const jsonData = {
+        nim: formData.get('nim'),
+        title: formData.get('title'),
+        desc: formData.get('description'),
+        requirements: formData.get('requirements'),
+        images: imageUrl || null,
+        date: new Date().toISOString().split('T')[0],
+        likes: 0
+      };
+      
       response = await fetch('/api/tellink/messages', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
           'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
         },
-        body: JSON.stringify(data)
+        credentials: 'same-origin',
+        body: JSON.stringify(jsonData)
       });
     }
     
-    if (!response.ok) throw new Error('Request failed');
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Request failed');
+    }
     
-    Swal.fire('Berhasil!', editId ? 'Post berhasil diupdate!' : 'Post berhasil ditambahkan!', 'success');
+    Swal.fire('Berhasil!', editId ? 'Project berhasil diupdate!' : 'Project berhasil ditambahkan!', 'success');
     
     // Close modal
     bootstrap.Modal.getInstance(document.getElementById('postModal')).hide();
@@ -841,62 +966,11 @@ async function submitForm() {
     loadPosts();
   } catch(e) {
     console.error('Error saving post:', e);
-    Swal.fire('Error!', 'Gagal menyimpan post. Silakan coba lagi.', 'error');
+    Swal.fire('Error!', e.message || 'Gagal menyimpan project. Silakan coba lagi.', 'error');
   }
 }
 
-// Delete post
-async function deletePost(id) {
-  const post = allPosts.find(p => p.id === id);
-  if (!post) {
-    Swal.fire('Error', 'Post tidak ditemukan', 'error');
-    return;
-  }
-  
-  const result = await Swal.fire({
-    title: 'Konfirmasi Hapus',
-    text: 'Yakin ingin menghapus postingan ini?',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#d33',
-    cancelButtonColor: '#3085d6',
-    confirmButtonText: 'Ya, Hapus!',
-    cancelButtonText: 'Batal'
-  });
-  
-  if (!result.isConfirmed) return;
-  
-  try {
-    const response = await fetch(`/api/tellink/messages/${id}?nim=${post.nim}`, {
-      method: 'DELETE',
-      headers: {
-        'Accept': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest',
-        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-      },
-      credentials: 'same-origin'
-    });
-    
-    if (!response.ok) throw new Error('Delete failed');
-    
-    Swal.fire('Terhapus!', 'Postingan berhasil dihapus.', 'success');
-    loadPosts();
-  } catch(e) {
-    console.error('Error deleting post:', e);
-    Swal.fire('Error!', 'Gagal menghapus postingan. Silakan coba lagi.', 'error');
-  }
-}
-
-// Show image in modal
-function showImage(imageUrl) {
-  Swal.fire({
-    imageUrl: imageUrl,
-    imageAlt: 'Post image',
-    showConfirmButton: false,
-    showCloseButton: true,
-    width: 'auto'
-  });
-}
+// Delete and show image functions are now defined at the top
 
 // Utility functions
 function formatDate(dateString) {
@@ -906,6 +980,14 @@ function formatDate(dateString) {
 }
 
 function escapeHtml(text) {
+  // Check if text is undefined or null
+  if (!text || text === null || text === undefined) {
+    return '';
+  }
+  
+  // Convert to string if it's not already
+  text = String(text);
+  
   const map = {
     '&': '&amp;',
     '<': '&lt;',
@@ -916,22 +998,38 @@ function escapeHtml(text) {
   return text.replace(/[&<>"']/g, m => map[m]);
 }
 
-// Preview image when URL is entered
-document.getElementById('form-image').addEventListener('input', function() {
-  const url = this.value;
-  const preview = document.getElementById('image-preview');
-  
-  if (url) {
-    preview.innerHTML = `<img src="${url}" class="img-thumbnail" onerror="this.style.display='none'">`;
-  } else {
-    preview.innerHTML = '';
+// Preview image when URL is entered - wrapped in DOMContentLoaded
+document.addEventListener('DOMContentLoaded', function() {
+  const formImage = document.getElementById('form-image');
+  if (formImage) {
+    formImage.addEventListener('input', function() {
+      const url = this.value;
+      const preview = document.getElementById('image-preview');
+      
+      if (preview) {
+        if (url) {
+          preview.innerHTML = `<img src="${url}" class="img-thumbnail" onerror="this.style.display='none'">`;
+        } else {
+          preview.innerHTML = '';
+        }
+      }
+    });
   }
 });
 
 // Load data when page loads
-window.onload = function() {
+window.addEventListener('DOMContentLoaded', function() {
   console.log('Page loaded, fetching posts...');
+  
+  // Make sure functions are available globally
+  console.log('Functions available:', {
+    viewPost: typeof window.viewPost,
+    showEditModal: typeof window.showEditModal,
+    deletePost: typeof window.deletePost,
+    likePost: typeof window.likePost
+  });
+  
   loadPosts();
-};
+});
 </script>
 @endsection

@@ -48,6 +48,10 @@ Route::middleware([TellinkAuth::class])->group(function () {
         Route::delete('/messages/{id}', [TellinkProxyController::class, 'deleteMessage']);
         Route::get('/reports', [TellinkProxyController::class, 'getReports']);
     });
+    
+    // Project API routes (new format)
+    Route::post('/deleteproject', [TellinkProxyController::class, 'deleteProject']);
+    Route::post('/editproject', [TellinkProxyController::class, 'editProject']);
 });
   
 
