@@ -89,7 +89,7 @@
             <span class="input-group-text bg-white border-end-0">
               <i class="fas fa-search text-muted"></i>
             </span>
-            <input type="text" id="search-nama" class="form-control border-start-0 ps-0" placeholder="Cari nama, NIM, atau email..." onkeyup="searchUser()">
+            <input type="text" id="search-nama" class="form-control border-start-0 ps-0" placeholder="Cari nama atau NIM..." onkeyup="searchUser()">
           </div>
         </div>
         <div class="col-md-3">
@@ -125,7 +125,6 @@
             <tr>
               <th scope="col" class="px-4 py-3 text-uppercase small fw-bold text-muted">Mahasiswa</th>
               <th scope="col" class="px-4 py-3 text-uppercase small fw-bold text-muted">NIM</th>
-              <th scope="col" class="px-4 py-3 text-uppercase small fw-bold text-muted">Email</th>
               <th scope="col" class="px-4 py-3 text-uppercase small fw-bold text-muted">Jurusan</th>
               <th scope="col" class="px-4 py-3 text-uppercase small fw-bold text-muted">Status</th>
               <th scope="col" class="px-4 py-3 text-uppercase small fw-bold text-muted text-center">Aksi</th>
@@ -133,7 +132,7 @@
           </thead>
           <tbody id="user-table-body">
             <tr>
-              <td colspan="6" class="text-center py-5">
+              <td colspan="5" class="text-center py-5">
                 <div class="spinner-border text-danger" role="status">
                   <span class="visually-hidden">Loading...</span>
                 </div>
@@ -160,69 +159,51 @@
     </div>
   </div>
 
-  <!-- Modal Form -->
-  <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+  <!-- View Modal -->
+  <div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
       <div class="modal-content border-0">
         <div class="modal-header bg-light border-0">
-          <h5 class="modal-title fw-bold" id="modal-title">Tambah Mahasiswa</h5>
-          <button type="button" class="btn-close" onclick="closeModal()" aria-label="Close"></button>
+          <h5 class="modal-title fw-bold" id="modal-title">Detail Mahasiswa</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body p-4">
-          <input type="hidden" id="edit-nim">
-          
           <div class="row g-3">
             <div class="col-md-6">
-              <label for="form-nim" class="form-label small fw-bold text-muted text-uppercase">NIM <span class="text-danger">*</span></label>
-              <input type="text" class="form-control form-control-lg" id="form-nim" placeholder="Contoh: 123456789">
-              <div class="invalid-feedback">NIM wajib diisi</div>
+              <label class="form-label small fw-bold text-muted text-uppercase">NIM</label>
+              <p class="form-control-plaintext fs-5" id="view-nim">-</p>
             </div>
             
             <div class="col-md-6">
-              <label for="form-nama" class="form-label small fw-bold text-muted text-uppercase">Nama Lengkap <span class="text-danger">*</span></label>
-              <input type="text" class="form-control form-control-lg" id="form-nama" placeholder="Masukkan nama lengkap">
-              <div class="invalid-feedback">Nama wajib diisi</div>
-            </div>
-            
-            <div class="col-md-12">
-              <label for="form-email" class="form-label small fw-bold text-muted text-uppercase">Email <span class="text-danger">*</span></label>
-              <input type="email" class="form-control form-control-lg" id="form-email" placeholder="email@example.com">
-              <div class="invalid-feedback">Email tidak valid</div>
+              <label class="form-label small fw-bold text-muted text-uppercase">Nama Lengkap</label>
+              <p class="form-control-plaintext fs-5" id="view-nama">-</p>
             </div>
             
             <div class="col-md-6">
-              <label for="form-jurusan" class="form-label small fw-bold text-muted text-uppercase">Jurusan <span class="text-danger">*</span></label>
-              <select class="form-select form-select-lg" id="form-jurusan">
-                <option value="">Pilih Jurusan</option>
-                <option value="D3 Rekayasa Perangkat Lunak">D3 Rekayasa Perangkat Lunak</option>
-                <option value="D3 Sistem Informasi">D3 Sistem Informasi</option>
-                <option value="D3 Teknik Komputer">D3 Teknik Komputer</option>
-                <option value="D3 Informatika">D3 Informatika</option>
-                <option value="S1 Kriya (Fashion & Textile Design)">S1 Kriya (Fashion & Textile Design)</option>
-                <option value="S1 Desain Komunikasi Visual">S1 Desain Komunikasi Visual</option>
-                <option value="S1 Manajemen Informatika">S1 Manajemen Informatika</option>
-              </select>
-              <div class="invalid-feedback">Jurusan wajib dipilih</div>
+              <label class="form-label small fw-bold text-muted text-uppercase">Email</label>
+              <p class="form-control-plaintext fs-5" id="view-email">-</p>
             </div>
             
             <div class="col-md-6">
-              <label for="form-password" class="form-label small fw-bold text-muted text-uppercase">Password <span class="text-danger" id="password-required">*</span></label>
-              <div class="input-group">
-                <input type="password" class="form-control form-control-lg" id="form-password" placeholder="Min. 8 karakter">
-                <button class="btn btn-outline-secondary" type="button" onclick="togglePassword()">
-                  <i class="fas fa-eye" id="password-icon"></i>
-                </button>
-              </div>
-              <small class="text-muted d-none" id="password-hint">Kosongkan jika tidak ingin mengubah password</small>
-              <div class="invalid-feedback">Password minimal 8 karakter</div>
+              <label class="form-label small fw-bold text-muted text-uppercase">Jurusan</label>
+              <p class="form-control-plaintext fs-5" id="view-jurusan">-</p>
+            </div>
+            
+            <div class="col-md-6">
+              <label class="form-label small fw-bold text-muted text-uppercase">Status</label>
+              <p class="form-control-plaintext" id="view-status">
+                <span class="badge badge-status active">Aktif</span>
+              </p>
+            </div>
+            
+            <div class="col-md-6">
+              <label class="form-label small fw-bold text-muted text-uppercase">Terdaftar Sejak</label>
+              <p class="form-control-plaintext fs-5" id="view-date">-</p>
             </div>
           </div>
         </div>
         <div class="modal-footer bg-light border-0">
-          <button type="button" class="btn btn-light px-4" onclick="closeModal()">Batal</button>
-          <button type="button" class="btn btn-danger px-4" onclick="submitForm()">
-            <i class="fas fa-save me-2"></i>Simpan
-          </button>
+          <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Tutup</button>
         </div>
       </div>
     </div>
@@ -344,8 +325,8 @@
   box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
 
-.btn-edit {
-  background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+.btn-info {
+  background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
   color: white;
 }
 
@@ -469,7 +450,7 @@ async function loadUsers() {
   } catch (err) {
     console.error('Error loading users:', err);
     document.getElementById("user-table-body").innerHTML = 
-      '<tr><td colspan="6" style="text-align:center; color:red;">Error memuat data! Check console for details.</td></tr>';
+      '<tr><td colspan="5" style="text-align:center; color:red;">Error memuat data! Check console for details.</td></tr>';
   }
 }
 
@@ -488,7 +469,7 @@ function renderTable(users) {
   
   if (!paginatedUsers || !paginatedUsers.length) {
     html = `<tr>
-      <td colspan="6" class="text-center py-5">
+      <td colspan="5" class="text-center py-5">
         <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
         <p class="text-muted mb-0">Tidak ada data mahasiswa</p>
       </td>
@@ -520,11 +501,6 @@ function renderTable(users) {
           <span class="badge badge-modern bg-secondary">${user.nim || '-'}</span>
         </td>
         <td class="px-4">
-          <a href="mailto:${user.email}" class="text-decoration-none">
-            ${user.email || '-'}
-          </a>
-        </td>
-        <td class="px-4">
           <span class="badge bg-info bg-opacity-10 text-info">
             ${user.jurusan || 'D3 Rekayasa Perangkat Lunak'}
           </span>
@@ -535,8 +511,8 @@ function renderTable(users) {
           </span>
         </td>
         <td class="px-4 text-center">
-          <button onclick="showEditModal('${user.nim}')" class="btn btn-action btn-edit btn-sm me-1" title="Edit">
-            <i class="fas fa-edit"></i>
+          <button onclick="showViewModal('${user.nim}')" class="btn btn-action btn-info btn-sm me-1" title="Lihat">
+            <i class="fas fa-eye"></i>
           </button>
           <button onclick="deleteUser('${user.nim}')" class="btn btn-action btn-delete btn-sm" title="Hapus">
             <i class="fas fa-trash"></i>
@@ -689,94 +665,39 @@ document.getElementById('search-nama').addEventListener('keypress', function(e) 
   }
 });
 
-// Show create modal
-function showCreateModal() {
-  document.getElementById('modal-title').innerText = 'Tambah Mahasiswa Baru';
-  document.getElementById('edit-nim').value = '';
-  document.getElementById('form-nim').value = '';
-  document.getElementById('form-nama').value = '';
-  document.getElementById('form-email').value = '';
-  document.getElementById('form-password').value = '';
-  document.getElementById('password-required').style.display = 'inline';
-  
-  // Show modal using Bootstrap
-  const modal = new bootstrap.Modal(document.getElementById('userModal'));
-  modal.show();
-}
-
-// Show edit modal
-function showEditModal(nim) {
+// Show view modal
+function showViewModal(nim) {
   const user = allUsers.find(u => u.nim === nim);
   if (!user) {
-    Swal.fire('Error', 'User tidak ditemukan', 'error');
+    Swal.fire('Error', 'Mahasiswa tidak ditemukan', 'error');
     return;
   }
   
-  document.getElementById('modal-title').innerText = 'Edit Data Mahasiswa';
-  document.getElementById('edit-nim').value = nim;
-  document.getElementById('form-nim').value = user.nim;
-  document.getElementById('form-nama').value = user.nama || user.name || '';
-  document.getElementById('form-email').value = user.email || '';
-  document.getElementById('form-password').value = '';
-  document.getElementById('password-required').style.display = 'none';
+  document.getElementById('modal-title').innerText = 'Detail Mahasiswa';
+  document.getElementById('view-nim').innerText = user.nim || '-';
+  document.getElementById('view-nama').innerText = user.nama || user.name || '-';
+  document.getElementById('view-email').innerText = user.email || '-';
+  document.getElementById('view-jurusan').innerText = user.jurusan || 'D3 Rekayasa Perangkat Lunak';
+  
+  // Set status badge
+  const isActive = Math.random() > 0.3; // Random status for demo
+  const statusHtml = isActive ? 
+    '<span class="badge badge-status active">Aktif</span>' : 
+    '<span class="badge badge-status inactive">Tidak Aktif</span>';
+  document.getElementById('view-status').innerHTML = statusHtml;
+  
+  // Set registration date (demo)
+  const date = new Date();
+  date.setDate(date.getDate() - Math.floor(Math.random() * 365));
+  document.getElementById('view-date').innerText = date.toLocaleDateString('id-ID', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  });
   
   // Show modal using Bootstrap
-  const modal = new bootstrap.Modal(document.getElementById('userModal'));
+  const modal = new bootstrap.Modal(document.getElementById('viewModal'));
   modal.show();
-}
-
-// Close modal
-function closeModal() {
-  const modal = bootstrap.Modal.getInstance(document.getElementById('userModal'));
-  if (modal) {
-    modal.hide();
-  }
-}
-
-// Submit form (create or update)
-async function submitForm() {
-  const nim = document.getElementById('form-nim').value;
-  const nama = document.getElementById('form-nama').value;
-  const email = document.getElementById('form-email').value;
-  const password = document.getElementById('form-password').value;
-  const editNim = document.getElementById('edit-nim').value;
-  
-  if (!nim || !nama || !email) {
-    alert("NIM, Nama, dan Email wajib diisi!");
-    return;
-  }
-  
-  if (!editNim && !password) {
-    alert("Password wajib diisi untuk user baru!");
-    return;
-  }
-  
-  try {
-    let response;
-    
-    if (editNim) {
-      // Update existing user - for now just alert since API endpoint not available
-      alert("Fitur edit belum tersedia di API");
-      closeModal();
-      return;
-    } else {
-      // Create new user via Laravel proxy
-      response = await fetch('/api/tellink/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nim, nama, email, password })
-      });
-    }
-    
-    if (!response.ok) throw new Error('Request failed');
-    
-    alert(editNim ? "Update berhasil!" : "User baru berhasil ditambahkan!");
-    closeModal();
-    loadUsers();
-  } catch(e) {
-    console.error('Error saving data:', e);
-    alert('Gagal menyimpan data! Check console for details.');
-  }
 }
 
 // Delete user
