@@ -727,9 +727,6 @@ function renderTable() {
                 <i class="fas fa-eye me-1"></i>View
               </button>
               <div>
-                <button type="button" onclick="showEditModal('${post.id}')" class="btn btn-sm btn-warning me-1" title="Edit">
-                  <i class="fas fa-edit"></i>
-                </button>
                 <button type="button" onclick="deletePost('${post.id}')" class="btn btn-sm btn-danger" title="Delete">
                   <i class="fas fa-trash"></i>
                 </button>
