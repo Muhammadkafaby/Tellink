@@ -95,9 +95,13 @@
         <div class="col-md-3">
           <select id="filter-jurusan" class="form-select" onchange="searchUser()">
             <option value="">Semua Jurusan</option>
-            <option value="D3 Rekayasa Perangkat Lunak">D3 RPL</option>
-            <option value="D3 Sistem Informasi">D3 SI</option>
-            <option value="D3 Teknik Komputer">D3 TK</option>
+            <option value="D3 Rekayasa Perangkat Lunak">D3 Rekayasa Perangkat Lunak</option>
+            <option value="D3 Sistem Informasi">D3 Sistem Informasi</option>
+            <option value="D3 Teknik Komputer">D3 Teknik Komputer</option>
+            <option value="D3 Informatika">D3 Informatika</option>
+            <option value="S1 Kriya (Fashion & Textile Design)">S1 Kriya (Fashion & Textile Design)</option>
+            <option value="S1 Desain Komunikasi Visual">S1 Desain Komunikasi Visual</option>
+            <option value="S1 Manajemen Informatika">S1 Manajemen Informatika</option>
           </select>
         </div>
         <div class="col-md-3">
@@ -193,6 +197,10 @@
                 <option value="D3 Rekayasa Perangkat Lunak">D3 Rekayasa Perangkat Lunak</option>
                 <option value="D3 Sistem Informasi">D3 Sistem Informasi</option>
                 <option value="D3 Teknik Komputer">D3 Teknik Komputer</option>
+                <option value="D3 Informatika">D3 Informatika</option>
+                <option value="S1 Kriya (Fashion & Textile Design)">S1 Kriya (Fashion & Textile Design)</option>
+                <option value="S1 Desain Komunikasi Visual">S1 Desain Komunikasi Visual</option>
+                <option value="S1 Manajemen Informatika">S1 Manajemen Informatika</option>
               </select>
               <div class="invalid-feedback">Jurusan wajib dipilih</div>
             </div>
@@ -558,7 +566,7 @@ function updateStats(users) {
   document.getElementById("total-users").innerText = totalUsers;
   document.getElementById("active-today").innerText = activeToday;
   document.getElementById("new-week").innerText = newWeek;
-  document.getElementById("total-majors").innerText = 3;
+  document.getElementById("total-majors").innerText = 7;
 }
 
 function renderPagination() {

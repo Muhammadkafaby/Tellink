@@ -97,7 +97,20 @@
             <input type="text" id="search-post" class="form-control border-start-0 ps-0" placeholder="Cari judul, deskripsi, atau NIM..." onkeyup="searchPosts()">
           </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
+          <select id="filter-kategori" class="form-select" onchange="searchPosts()">
+            <option value="">Semua Kategori</option>
+            <option value="Web Development">Web Development</option>
+            <option value="Mobile App">Mobile App</option>
+            <option value="Data Science">Data Science</option>
+            <option value="UI/UX Design">UI/UX Design</option>
+            <option value="Machine Learning">Machine Learning</option>
+            <option value="IoT Project">IoT Project</option>
+            <option value="Game Development">Game Development</option>
+            <option value="Lainnya">Lainnya</option>
+          </select>
+        </div>
+        <div class="col-md-2">
           <input type="date" id="filter-date" class="form-control" onchange="searchPosts()" placeholder="Filter tanggal">
         </div>
         <div class="col-md-2">
@@ -108,7 +121,7 @@
             <option value="100">100 data</option>
           </select>
         </div>
-        <div class="col-md-2 text-end">
+        <div class="col-md-1 text-end">
           <button class="btn btn-outline-secondary" onclick="exportPosts()" title="Export Data">
             <i class="fas fa-download me-2"></i>Export
           </button>
@@ -730,6 +743,7 @@ function searchPosts() {
 function getFilteredPosts() {
   const query = document.getElementById('search-post').value.toLowerCase();
   const dateFilter = document.getElementById('filter-date').value;
+  const kategoriFilter = document.getElementById('filter-kategori').value;
   
   return allPosts.filter(post => {
     const matchesQuery = !query || 
@@ -739,7 +753,9 @@ function getFilteredPosts() {
     
     const matchesDate = !dateFilter || post.date === dateFilter;
     
-    return matchesQuery && matchesDate;
+    const matchesKategori = !kategoriFilter || post.kategori === kategoriFilter;
+    
+    return matchesQuery && matchesDate && matchesKategori;
   });
 }
 
