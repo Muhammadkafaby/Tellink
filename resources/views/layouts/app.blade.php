@@ -108,47 +108,32 @@
                 </ul>
                 
                 <ul class="navbar-nav">
-                    @if(session()->has('user_name'))
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
-                                <span class="user-avatar">
-                                    {{ strtoupper(substr(session('user_name', 'U'), 0, 1)) }}
-                                </span>
-                                {{ session('user_name', 'User') }}
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li>
-                                    <h6 class="dropdown-header">
-                                        <div>{{ session('user_name', 'User') }}</div>
-                                        <small class="text-muted">{{ session('user_nim', '') }}</small>
-                                    </h6>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <a class="dropdown-item" href="{{ url('/profile') }}">
-                                        <i class="fas fa-user-circle me-2"></i> Profile
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="{{ url('/settings') }}">
-                                        <i class="fas fa-cog me-2"></i> Settings
-                                    </a>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <a class="dropdown-item text-danger" href="{{ url('/logout') }}">
-                                        <i class="fas fa-sign-out-alt me-2"></i> Logout
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                    @else
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url('/login') }}">
-                                <i class="fas fa-sign-in-alt me-1"></i> Login
-                            </a>
-                        </li>
-                    @endif
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
+                            <span class="user-avatar">
+                                <i class="fas fa-user"></i>
+                            </span>
+                            User
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="{{ url('/profile') }}">
+                                    <i class="fas fa-user-circle me-2"></i> Profile
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ url('/settings') }}">
+                                    <i class="fas fa-cog me-2"></i> Settings
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item text-danger" href="{{ url('/logout') }}">
+                                    <i class="fas fa-sign-out-alt me-2"></i> Logout
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
                 </ul>
             </div>
         </div>
